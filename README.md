@@ -11,6 +11,8 @@ Learning some svelte and trying to stream realtime updates to it from a gRPC ser
 - [golang](go.dev)
 
 ```sh
+go mod tidy
+npm install
 buf generate
 ```
 

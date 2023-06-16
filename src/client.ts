@@ -4,7 +4,7 @@ import { NotificationServiceClient } from "./gen/notifications/v1/notifications.
 import { notifier } from './store';
 
 const transport = new GrpcWebFetchTransport({
-  baseUrl: "notifier.docker.localhost",
+  baseUrl: "http://notifier.docker.localhost",
 });
 
 const client = new NotificationServiceClient(transport)
