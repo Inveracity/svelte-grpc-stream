@@ -6,14 +6,16 @@ Learning some svelte and trying to stream realtime updates to it from a gRPC ser
 
 ## Requirements
 
+- [node](nodejs.org) to run svelte app
+- [golang](go.dev) to run golang server
 - [buf](buf.build) to generate code from protobuffers
-- [node](nodejs.org)
-- [golang](go.dev)
+
+## Dev
 
 ```sh
 go mod tidy
 npm install
-buf generate
+make proto
 ```
 
 ```sh
