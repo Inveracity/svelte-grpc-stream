@@ -32,6 +32,6 @@
 		"@protobuf-ts/grpcweb-transport": "^2.9.0",
 		"@protobuf-ts/runtime": "^2.9.0",
 		"@protobuf-ts/runtime-rpc": "^2.9.0",
-		"abort-controller": "^3.0.0"
+		"svelte-loading-spinners": "^0.3.4"
 	}
 }
