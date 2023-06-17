@@ -1,32 +1,68 @@
 <script lang="ts">
-    import {Subscribe, Unsubscribe} from '../grpc'
-    import {notifier} from '../store'
-    import {status} from '../store'
-
-    let subscriberId = "joe"
-
+    import { Subscribe, Unsubscribe} from '../grpc'
+    import { notifier } from '../store'
+    import { status } from '../store'
+    import { BarLoader } from 'svelte-loading-spinners';
+    import { send_notification } from '../api'
+    let subscriberId = ""
+    let receiverId = ""
 </script>
 
 <div>
     <h1>GRPC Stream</h1>
 
     <div>
-        <p>Click the Subscribe button receive realtime events</p>
-    </div>
+        <p> status: {$status ? $status : "disconnected"}</p>
 
-    <div>
-        <input bind:value={subscriberId} placeholder="subscriber id" disabled={$status === "connected"} />
-        <br />
+        <div style="visibility: {$status !== 'pending' ? 'hidden' : 'visible'} ">
+            <BarLoader color="#ffc800" />
+        </div>
+        
+        <input bind:value={subscriberId} placeholder="subscriber id" disabled={$status === "connected" || $status === "pending"} />
+        
         {#if $status === 'connected'}
             <button on:click={() => Unsubscribe()}> Unsubscribe </button>
         {:else}
-            <button on:click={() => Subscribe(subscriberId)}> Subscribe </button>
+            <button on:click={() => Subscribe(subscriberId)} disabled={subscriberId === ""}> Subscribe </button>
         {/if}
-        <button on:click={notifier.reset}> clear </button>
-        <p> status: {$status}</p>
+        
+        
+    </div>
+
+    <!-- TODO: Make the button a component -->
+    <div>
+        <input bind:value={receiverId} placeholder="who should receive this event?"/>
+        <button 
+            disabled={receiverId === ""} 
+            on:click={() => send_notification({
+                subid: receiverId, 
+                text: "notification!", 
+                sender: subscriberId
+            })}> 
+                notify 
+        </button>
+        <button 
+            disabled={receiverId === ""} 
+            on:click={() => send_notification({
+                subid: receiverId, 
+                text: "who would've thought?", 
+                sender: subscriberId
+            })}> 
+                who? 
+        </button>
+        <button 
+            disabled={receiverId === ""} 
+            on:click={() => send_notification({
+                subid: receiverId, 
+                text: "not me!", 
+                sender: subscriberId
+            })}> 
+                not me! 
+        </button>
     </div>
 
     <div class="events">
+        <button style="float: right;" on:click={notifier.reset}> clear </button>
         {#each $notifier as item}
             <p>{item}</p>
         {/each}
