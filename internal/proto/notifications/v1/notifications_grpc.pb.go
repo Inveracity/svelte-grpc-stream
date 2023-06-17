@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotificationServiceClient interface {
-	Notify(ctx context.Context, in *NotifyRequest, opts ...grpc.CallOption) (NotificationService_NotifyClient, error)
+	Notify(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (NotificationService_NotifyClient, error)
 }
 
 type notificationServiceClient struct {
@@ -37,7 +37,7 @@ func NewNotificationServiceClient(cc grpc.ClientConnInterface) NotificationServi
 	return &notificationServiceClient{cc}
 }
 
-func (c *notificationServiceClient) Notify(ctx context.Context, in *NotifyRequest, opts ...grpc.CallOption) (NotificationService_NotifyClient, error) {
+func (c *notificationServiceClient) Notify(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (NotificationService_NotifyClient, error) {
 	stream, err := c.cc.NewStream(ctx, &NotificationService_ServiceDesc.Streams[0], NotificationService_Notify_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (x *notificationServiceNotifyClient) Recv() (*NotificationServiceNotifyResp
 // All implementations must embed UnimplementedNotificationServiceServer
 // for forward compatibility
 type NotificationServiceServer interface {
-	Notify(*NotifyRequest, NotificationService_NotifyServer) error
+	Notify(*SubscribeRequest, NotificationService_NotifyServer) error
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -81,7 +81,7 @@ type NotificationServiceServer interface {
 type UnimplementedNotificationServiceServer struct {
 }
 
-func (UnimplementedNotificationServiceServer) Notify(*NotifyRequest, NotificationService_NotifyServer) error {
+func (UnimplementedNotificationServiceServer) Notify(*SubscribeRequest, NotificationService_NotifyServer) error {
 	return status.Errorf(codes.Unimplemented, "method Notify not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
@@ -98,7 +98,7 @@ func RegisterNotificationServiceServer(s grpc.ServiceRegistrar, srv Notification
 }
 
 func _NotificationService_Notify_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(NotifyRequest)
+	m := new(SubscribeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
