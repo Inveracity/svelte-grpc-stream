@@ -3,7 +3,7 @@ version: '3'
 services:
   reverse-proxy:
     image: traefik:v3.0.0-beta2
-    command: --api.insecure=true --providers.docker --log.level=DEBUG
+    command: --api.insecure=true --providers.docker --log.level=INFO
     ports:
       - "80:80"
       - "8080:8080" # The Web UI (enabled by --api.insecure=true)
