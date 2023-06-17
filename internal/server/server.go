@@ -74,7 +74,7 @@ func forwardEventToClient(
 	}
 
 	n := pb.Notification{
-		Subid:  data.Recipient,
+		Subid:  data.Subid,
 		Text:   data.Text,
 		Sender: data.Sender,
 	}

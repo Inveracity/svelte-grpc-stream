@@ -5,18 +5,19 @@ package notifications.v1;
 option go_package = "internal/gen/notifications";
 
 service NotificationService {
-  rpc Notify(NotifyRequest) returns (stream NotificationServiceNotifyResponse) {}
+  rpc Notify(SubscribeRequest) returns (stream NotificationServiceNotifyResponse) {}
 }
 
 message Notification {
-  string id = 1;
-  string msg = 2;
+  string subid = 1;
+  string text = 2;
+  string sender = 3;
 }
 
 message NotificationServiceNotifyResponse {
   Notification notifications = 1;
 }
 
-message NotifyRequest {
-  string id = 1;
+message SubscribeRequest {
+  string subid = 1;
 }
