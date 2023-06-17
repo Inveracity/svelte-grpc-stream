@@ -17,13 +17,21 @@ import { MessageType } from "@protobuf-ts/runtime";
  */
 export interface Notification {
     /**
-     * @generated from protobuf field: string id = 1;
+     * @generated from protobuf field: string subid = 1;
      */
-    id: string;
+    subid: string;
     /**
-     * @generated from protobuf field: string msg = 2;
+     * @generated from protobuf field: string text = 2;
      */
-    msg: string;
+    text: string;
+    /**
+     * @generated from protobuf field: string sender = 3;
+     */
+    sender: string;
+    /**
+     * @generated from protobuf field: string recipient = 4;
+     */
+    recipient: string;
 }
 /**
  * @generated from protobuf message notifications.v1.NotificationServiceNotifyResponse
@@ -35,24 +43,26 @@ export interface NotificationServiceNotifyResponse {
     notifications?: Notification;
 }
 /**
- * @generated from protobuf message notifications.v1.NotifyRequest
+ * @generated from protobuf message notifications.v1.SubscribeRequest
  */
-export interface NotifyRequest {
+export interface SubscribeRequest {
     /**
-     * @generated from protobuf field: string id = 1;
+     * @generated from protobuf field: string subid = 1;
      */
-    id: string;
+    subid: string;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class Notification$Type extends MessageType<Notification> {
     constructor() {
         super("notifications.v1.Notification", [
-            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "msg", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "subid", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "sender", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "recipient", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Notification>): Notification {
-        const message = { id: "", msg: "" };
+        const message = { subid: "", text: "", sender: "", recipient: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<Notification>(this, message, value);
@@ -63,11 +73,17 @@ class Notification$Type extends MessageType<Notification> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
+                case /* string subid */ 1:
+                    message.subid = reader.string();
                     break;
-                case /* string msg */ 2:
-                    message.msg = reader.string();
+                case /* string text */ 2:
+                    message.text = reader.string();
+                    break;
+                case /* string sender */ 3:
+                    message.sender = reader.string();
+                    break;
+                case /* string recipient */ 4:
+                    message.recipient = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -81,12 +97,18 @@ class Notification$Type extends MessageType<Notification> {
         return message;
     }
     internalBinaryWrite(message: Notification, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string msg = 2; */
-        if (message.msg !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.msg);
+        /* string subid = 1; */
+        if (message.subid !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.subid);
+        /* string text = 2; */
+        if (message.text !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.text);
+        /* string sender = 3; */
+        if (message.sender !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.sender);
+        /* string recipient = 4; */
+        if (message.recipient !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.recipient);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -145,26 +167,26 @@ class NotificationServiceNotifyResponse$Type extends MessageType<NotificationSer
  */
 export const NotificationServiceNotifyResponse = new NotificationServiceNotifyResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class NotifyRequest$Type extends MessageType<NotifyRequest> {
+class SubscribeRequest$Type extends MessageType<SubscribeRequest> {
     constructor() {
-        super("notifications.v1.NotifyRequest", [
-            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("notifications.v1.SubscribeRequest", [
+            { no: 1, name: "subid", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<NotifyRequest>): NotifyRequest {
-        const message = { id: "" };
+    create(value?: PartialMessage<SubscribeRequest>): SubscribeRequest {
+        const message = { subid: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
-            reflectionMergePartial<NotifyRequest>(this, message, value);
+            reflectionMergePartial<SubscribeRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: NotifyRequest): NotifyRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubscribeRequest): SubscribeRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
+                case /* string subid */ 1:
+                    message.subid = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -177,10 +199,10 @@ class NotifyRequest$Type extends MessageType<NotifyRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: NotifyRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
+    internalBinaryWrite(message: SubscribeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string subid = 1; */
+        if (message.subid !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.subid);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -188,12 +210,12 @@ class NotifyRequest$Type extends MessageType<NotifyRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message notifications.v1.NotifyRequest
+ * @generated MessageType for protobuf message notifications.v1.SubscribeRequest
  */
-export const NotifyRequest = new NotifyRequest$Type();
+export const SubscribeRequest = new SubscribeRequest$Type();
 /**
  * @generated ServiceType for protobuf service notifications.v1.NotificationService
  */
 export const NotificationService = new ServiceType("notifications.v1.NotificationService", [
-    { name: "Notify", serverStreaming: true, options: {}, I: NotifyRequest, O: NotificationServiceNotifyResponse }
+    { name: "Notify", serverStreaming: true, options: {}, I: SubscribeRequest, O: NotificationServiceNotifyResponse }
 ]);

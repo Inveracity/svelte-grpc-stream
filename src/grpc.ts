@@ -1,9 +1,8 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
-import type { NotifyRequest } from './proto/notifications/v1/notifications';
+import type { SubscribeRequest } from './proto/notifications/v1/notifications';
 import { NotificationServiceClient } from "./proto/notifications/v1/notifications.client";
 import { notifier } from './store';
 import { status } from './store';
-
 
 // Create a new AbortController for each subscription
 let controller = new AbortController()
@@ -24,27 +23,32 @@ export const Subscribe = async (subscriberId: string) => {
   });
   
   const client = new NotificationServiceClient(transport)
-  const request: NotifyRequest = {id: subscriberId}
+  const request: SubscribeRequest = {subid: subscriberId}
   const call = client.notify(request)
 
+
   // Update UI to show that the client is connected
-  status.connected()
+  // TODO: this doesn't quite work so well yet
+  status.pending()
+
+  call.status.catch((e) => {
+    status.error(e.message)
+    return
+  })
+
+  call.status.then((v) => {
+    console.log(v.code)
+    v.code === "" ? status.connected() : status.error(v.detail)
+  })
 
   // Listen for messages from the server
   for await (const msg of call.responses ) {
-    console.log("connected!")
-    if (state === "disconnected") { 
-      console.log("breaking")
-      break 
-    }
-    
-    notifier.write(msg.notifications?.msg)
+    const message = `${msg.notifications?.sender}: ${msg.notifications?.text}`
+    notifier.write(message)
   }
   
-  let callstatus = await call.status;
-  console.log(callstatus)
   status.disconnected()
-  controller.abort()
+  controller.abort() 
 }
 
 export const Unsubscribe = async () => {

@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-function createNotifier() {
+const createNotifier = () => {
 	const { subscribe, set, update } = writable([""]);
 
 	return {
@@ -12,6 +12,8 @@ function createNotifier() {
 	};
 }
 
+export const notifier = createNotifier();
+
 function createStatus() {
 	const { subscribe, set } = writable("");
 
@@ -19,8 +21,9 @@ function createStatus() {
 		subscribe,
 		connected: () => set("connected"),
 		disconnected: () => set("disconnected"),
+		pending: () => set("pending"),
+		error: (errormsg: string) => set("error: " + errormsg)
 	};
 }
 
-export const notifier = createNotifier();
 export const status = createStatus();

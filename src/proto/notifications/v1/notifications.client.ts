@@ -6,7 +6,7 @@ import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { NotificationService } from "./notifications";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { NotificationServiceNotifyResponse } from "./notifications";
-import type { NotifyRequest } from "./notifications";
+import type { SubscribeRequest } from "./notifications";
 import type { ServerStreamingCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
 /**
@@ -14,9 +14,9 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  */
 export interface INotificationServiceClient {
     /**
-     * @generated from protobuf rpc: Notify(notifications.v1.NotifyRequest) returns (stream notifications.v1.NotificationServiceNotifyResponse);
+     * @generated from protobuf rpc: Notify(notifications.v1.SubscribeRequest) returns (stream notifications.v1.NotificationServiceNotifyResponse);
      */
-    notify(input: NotifyRequest, options?: RpcOptions): ServerStreamingCall<NotifyRequest, NotificationServiceNotifyResponse>;
+    notify(input: SubscribeRequest, options?: RpcOptions): ServerStreamingCall<SubscribeRequest, NotificationServiceNotifyResponse>;
 }
 /**
  * @generated from protobuf service notifications.v1.NotificationService
@@ -28,10 +28,10 @@ export class NotificationServiceClient implements INotificationServiceClient, Se
     constructor(private readonly _transport: RpcTransport) {
     }
     /**
-     * @generated from protobuf rpc: Notify(notifications.v1.NotifyRequest) returns (stream notifications.v1.NotificationServiceNotifyResponse);
+     * @generated from protobuf rpc: Notify(notifications.v1.SubscribeRequest) returns (stream notifications.v1.NotificationServiceNotifyResponse);
      */
-    notify(input: NotifyRequest, options?: RpcOptions): ServerStreamingCall<NotifyRequest, NotificationServiceNotifyResponse> {
+    notify(input: SubscribeRequest, options?: RpcOptions): ServerStreamingCall<SubscribeRequest, NotificationServiceNotifyResponse> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
-        return stackIntercept<NotifyRequest, NotificationServiceNotifyResponse>("serverStreaming", this._transport, method, opt, input);
+        return stackIntercept<SubscribeRequest, NotificationServiceNotifyResponse>("serverStreaming", this._transport, method, opt, input);
     }
 }
