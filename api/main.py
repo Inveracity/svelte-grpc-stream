@@ -21,11 +21,7 @@ async def root():
 @app.post("/send-notification")
 async def send_notification(evt: Event, background_tasks: BackgroundTasks):
     background_tasks.add_task(send, evt=evt)
-    return {"message": f"action {evt.action} sent to {evt.sub_id}"}
-
-"""
-curl -X POST "http://api.docker.localhost/send-notification" \
-     -H "accept: application/json" \
-     -H "Content-Type: application/json" \
-     -d '{"text":"wassup","sub_id":"joe","action":"add"}' | jq
-"""
+    
+    return {
+        "message": evt.json(),
+    }
