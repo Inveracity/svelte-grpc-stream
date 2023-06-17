@@ -1,6 +1,7 @@
 <script>
-    import {Subscribe} from '../grpc'
+    import {Subscribe, Unsubscribe} from '../grpc'
     import {notifier} from '../store'
+    import {status} from '../store'
 
     let subscriberId = "joe"
 
@@ -14,10 +15,15 @@
     </div>
 
     <div>
-        <input bind:value={subscriberId} placeholder="subscriber id" />
+        <input bind:value={subscriberId} placeholder="subscriber id" disabled={$status === "connected"} />
         <br />
-        <button on:click={() => Subscribe(subscriberId)}> Subscribe </button>
+        {#if $status === 'connected'}
+            <button on:click={() => Unsubscribe()}> Unsubscribe </button>
+        {:else}
+            <button on:click={() => Subscribe(subscriberId)}> Subscribe </button>
+        {/if}
         <button on:click={notifier.reset}> clear </button>
+        <p> status: {$status}</p>
     </div>
 
     <div>
@@ -33,12 +39,14 @@
         margin: 10px;
     }
     input {
-        padding: 2px;
+        padding: 5px;
         margin: 10px;
+        width: 210px;
     }
     button {
-        padding: 2px;
+        padding: 5px;
         margin: 10px;
+        width: 100px;
     }
     p {
         margin: 10px;
