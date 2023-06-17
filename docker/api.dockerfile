@@ -1,8 +1,8 @@
 from python:3.11-alpine
 
-RUN mkdir /app
+RUN mkdir -p /app/api
+COPY api /app/api
 WORKDIR /app
-COPY api .
-RUN pip install -r requirements.txt
+RUN pip install -r api/requirements.txt
 
-CMD ["uvicorn", "--host=0.0.0.0", "--port=8000", "main:app", "--reload"]
+CMD ["uvicorn", "--host=0.0.0.0", "--port=8000", "api.main:app", "--reload"]

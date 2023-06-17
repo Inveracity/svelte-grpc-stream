@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import {Subscribe, Unsubscribe} from '../grpc'
     import {notifier} from '../store'
     import {status} from '../store'
@@ -26,7 +26,7 @@
         <p> status: {$status}</p>
     </div>
 
-    <div>
+    <div class="events">
         {#each $notifier as item}
             <p>{item}</p>
         {/each}
@@ -35,6 +35,11 @@
 
 
 <style>
+    .events {
+        border: 1px solid black;
+        height: 200px;
+        overflow: scroll;
+    }
     div {
         margin: 10px;
     }
