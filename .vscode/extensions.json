@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "svelte.svelte-vscode",
-        "bufbuild.vscode-buf"
+        "bufbuild.vscode-buf",
+        "peterj.proto"
     ]
 }
