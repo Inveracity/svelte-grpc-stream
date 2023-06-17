@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/inveracity/trying-svelte/internal/gen/notifications/v1"
+	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/notifications/v1"
 
 	"google.golang.org/grpc"
 )

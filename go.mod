@@ -1,4 +1,4 @@
-module github.com/inveracity/trying-svelte
+module github.com/inveracity/svelte-grpc-stream
 
 go 1.20
 

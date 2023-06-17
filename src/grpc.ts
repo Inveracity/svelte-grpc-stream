@@ -1,6 +1,6 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
-import type { NotifyRequest } from './gen/notifications/v1/notifications';
-import { NotificationServiceClient } from "./gen/notifications/v1/notifications.client";
+import type { NotifyRequest } from './proto/notifications/v1/notifications';
+import { NotificationServiceClient } from "./proto/notifications/v1/notifications.client";
 import { notifier } from './store';
 
 const transport = new GrpcWebFetchTransport({
@@ -9,8 +9,8 @@ const transport = new GrpcWebFetchTransport({
 
 const client = new NotificationServiceClient(transport)
 
-export const Subscribe = async () => {
-    const request: NotifyRequest = {}
+export const Subscribe = async (subscriberId: string) => {
+    const request: NotifyRequest = {id: subscriberId}
     const call = client.notify(request)
     for await (const msg of call.responses ) {
         notifier.write(msg.notifications?.name)

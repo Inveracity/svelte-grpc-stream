@@ -17,4 +17,6 @@ message NotificationServiceNotifyResponse {
   Notification notifications = 1;
 }
 
-message NotifyRequest {}
+message NotifyRequest {
+  string id = 1;
+}
