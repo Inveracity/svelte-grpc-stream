@@ -16,7 +16,7 @@
     <div>
         <input bind:value={subscriberId} placeholder="subscriber id" />
         <br />
-        <button on:click={Subscribe}> Subscribe </button>
+        <button on:click={() => Subscribe(subscriberId)}> Subscribe </button>
         <button on:click={notifier.reset}> clear </button>
     </div>
 
