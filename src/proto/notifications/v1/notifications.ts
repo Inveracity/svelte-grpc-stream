@@ -21,9 +21,9 @@ export interface Notification {
      */
     id: string;
     /**
-     * @generated from protobuf field: string name = 2;
+     * @generated from protobuf field: string msg = 2;
      */
-    name: string;
+    msg: string;
 }
 /**
  * @generated from protobuf message notifications.v1.NotificationServiceNotifyResponse
@@ -48,11 +48,11 @@ class Notification$Type extends MessageType<Notification> {
     constructor() {
         super("notifications.v1.Notification", [
             { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "msg", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Notification>): Notification {
-        const message = { id: "", name: "" };
+        const message = { id: "", msg: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<Notification>(this, message, value);
@@ -66,8 +66,8 @@ class Notification$Type extends MessageType<Notification> {
                 case /* string id */ 1:
                     message.id = reader.string();
                     break;
-                case /* string name */ 2:
-                    message.name = reader.string();
+                case /* string msg */ 2:
+                    message.msg = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -84,9 +84,9 @@ class Notification$Type extends MessageType<Notification> {
         /* string id = 1; */
         if (message.id !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string name = 2; */
-        if (message.name !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.name);
+        /* string msg = 2; */
+        if (message.msg !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.msg);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

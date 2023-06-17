@@ -12,4 +12,15 @@ function createNotifier() {
 	};
 }
 
+function createStatus() {
+	const { subscribe, set } = writable("");
+
+	return {
+		subscribe,
+		connected: () => set("connected"),
+		disconnected: () => set("disconnected"),
+	};
+}
+
 export const notifier = createNotifier();
+export const status = createStatus();
