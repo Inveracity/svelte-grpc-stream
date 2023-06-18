@@ -5,7 +5,7 @@
 ```sh
 # Install dependencies
 cd frontend
-npm install
+npm install --include=dev
 
 # generate gRPC code
 cd ..
