@@ -11,13 +11,8 @@ plugins:
     out: relay/internal
     opt:
       - paths=source_relative
+
   - plugin: buf.build/protocolbuffers/go
     out: relay/internal
     opt:
       - paths=source_relative
-
-  # Python
-  - plugin: python_betterproto
-    out: api/proto
-    opt:
-      - pydantic_dataclasses
