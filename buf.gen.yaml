@@ -2,14 +2,17 @@ version: v1
 managed:
   enabled: true
 plugins:
+  # Typescript
   - plugin: buf.build/community/timostamm-protobuf-ts:v2.9.0
-    out: src
+    out: frontend/src
 
+  # Golang
   - plugin: buf.build/grpc/go:v1.3.0
-    out: internal
+    out: relay/internal
     opt:
       - paths=source_relative
+
   - plugin: buf.build/protocolbuffers/go
-    out: internal
+    out: relay/internal
     opt:
       - paths=source_relative

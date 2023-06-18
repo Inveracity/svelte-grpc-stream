@@ -44,6 +44,12 @@ func (s *server) Notify(in *pb.SubscribeRequest, srv pb.NotificationService_Noti
 
 	go subscribe(ctx, s.nats, in.Subid, &eventChannel)
 
+	// send a "connected" message to the client
+	queueName := fmt.Sprintf("events.%s", in.Subid)
+	connectResponse := *nats.NewMsg(queueName)
+	connectResponse.Data = []byte(`{"subid":"` + in.Subid + `", "sender": "server", "text":"connected"}`)
+	forwardEventToClient(connectResponse, srv)
+
 	for {
 		select {
 		case <-ctx.Done():

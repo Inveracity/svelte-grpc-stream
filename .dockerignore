@@ -1,0 +1,17 @@
+# general
+.git
+.gitattributes
+.gitignore
+README.md
+readme.md
+docker
+.vscode
+
+
+# frontend
+frontend/node_modules
+.eslintignore
+.eslintrc.cjs
+.prettierrc
+.pretieriignore
+
