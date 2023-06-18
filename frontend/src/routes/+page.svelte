@@ -23,7 +23,7 @@
         {#if $status === 'connected'}
             <button on:click={() => Unsubscribe()}> Unsubscribe </button>
         {:else}
-            <button on:click={() => Subscribe(subscriberId)} disabled={subscriberId === ""}> Subscribe </button>
+            <button on:click={() => Subscribe(subscriberId)} disabled={subscriberId === "" && ($status === "connected" || $status === "pending")}> Subscribe </button>
         {/if}
         
         
