@@ -26,3 +26,15 @@ This project consists of 5 infrastructure components
 - [relay](relay/readme.md)
 - [api](api/readme.md)
 - [frontend](frontend/readme.md)
+
+## Ingress
+
+In your hosts file set:
+
+```plaintext
+127.0.0.1 frontend.docker.localhost
+127.0.0.1 relay.docker.localhost
+127.0.0.1 api.docker.localhost
+```
+
+After running `docker compose up`, <http://frontend.docker.localhost> should now be available via Traefik.
