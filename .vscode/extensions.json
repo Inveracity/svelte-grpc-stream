@@ -2,6 +2,7 @@
     "recommendations": [
         "svelte.svelte-vscode",
         "bufbuild.vscode-buf",
-        "peterj.proto"
+        "peterj.proto",
+        "bierner.markdown-mermaid"
     ]
 }

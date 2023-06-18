@@ -13,6 +13,10 @@ This project consists of 5 infrastructure components
 - Relay (golang): Picks up messages from the queue and forwards them to a gRPC stream to the frontend
 - Frontend (svelte & typecript): For sending notifications via the API and recieving notifications via the Relay.
 
+## Documentation
+
+- [docs](docs/readme.md)
+
 ## Requirements
 
 - [node 20.3.0](nodejs.org) to run svelte app
