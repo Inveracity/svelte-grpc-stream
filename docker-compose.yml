@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  reverse-proxy:
+  traefik:
     image: traefik:v3.0.0-beta2
     container_name: traefik
     command: --api.insecure=true --providers.docker --log.level=INFO
@@ -19,25 +19,25 @@ services:
       - "4222:4222"
     command: nats-server -js -m 8222 -D -l /dev/null
 
-  notifier:
-    depends_on: 
+  relay:
+    depends_on:
       - nats
-    container_name: notifier
+    container_name: relay
     build:
       context: .
-      dockerfile: docker/notifier.dockerfile
+      dockerfile: docker/relay.dockerfile
     ports:
       - "50051:50051"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.notifier.rule=Host(`notifier.docker.localhost`)"
-      - "traefik.http.services.notifier.loadbalancer.server.scheme=h2c"
-      - "traefik.http.middlewares.notifier-grpc.grpcWeb.allowOrigins=*"
-      - "traefik.http.routers.notifier.middlewares=notifier-grpc"
+      - "traefik.http.routers.relay.rule=Host(`relay.docker.localhost`)"
+      - "traefik.http.services.relay.loadbalancer.server.scheme=h2c"
+      - "traefik.http.middlewares.relay-grpc.grpcWeb.allowOrigins=*"
+      - "traefik.http.routers.relay.middlewares=relay-grpc"
 
   api:
     container_name: api
-    depends_on: 
+    depends_on:
       - nats
     build:
       context: .
