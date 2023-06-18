@@ -1,16 +1,14 @@
-import { Notification } from "./proto/notifications/v1/notifications";
-
-interface Event {
+interface Notification {
   subid: string;
   text: string;
   sender: string;
 }
 
-export const send_notification = (evt: Notification) => {
+export const send_notification = (notif: Notification) => {
 
   fetch('http://api.docker.localhost/send-notification', {
     method: 'POST',
-    body: JSON.stringify(evt),
+    body: JSON.stringify(notif),
     headers: {'Content-Type': 'application/json'}
   })
 }
