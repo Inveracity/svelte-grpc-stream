@@ -48,6 +48,18 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`api.docker.localhost`)"
       - "traefik.http.services.api.loadbalancer.server.scheme=http"
-      - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.routers.api.middlewares=api-stripprefix"
 
+  frontend:
+    container_name: frontend
+    depends_on:
+      - nats
+      - relay
+    build:
+      context: .
+      dockerfile: docker/frontend.dockerfile
+    ports:
+      - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.docker.localhost`)"
+      - "traefik.http.services.frontend.loadbalancer.server.scheme=http"

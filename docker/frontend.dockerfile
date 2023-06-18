@@ -16,5 +16,5 @@ COPY --from=build /app .
 
 
 ENV HOST=0.0.0.0
-EXPOSE 4173
-CMD ["npm","run", "preview","--", "--host", "0.0.0.0"]
+EXPOSE 3000
+CMD ["node","build/index.js"]

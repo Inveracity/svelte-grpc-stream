@@ -18,7 +18,7 @@ export const Subscribe = async (subscriberId: string) => {
   }
 
   const transport = new GrpcWebFetchTransport({
-    baseUrl: "http://notifier.docker.localhost",
+    baseUrl: "http://relay.docker.localhost",
     abort: controller.signal,
   });
   

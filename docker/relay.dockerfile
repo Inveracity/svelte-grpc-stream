@@ -1,6 +1,6 @@
 FROM golang:1.19-alpine AS build
 WORKDIR /app
-COPY relay relay
+COPY relay .
 
 RUN go build -o /app/relay cmd/relay/main.go
 
