@@ -29,7 +29,7 @@
 		{:else}
 			<button
 				on:click={() => Subscribe(subscriberId)}
-				disabled={subscriberId === '' && ($status === 'connected' || $status === 'pending')}
+				disabled={subscriberId === '' || ($status === 'connected' || $status === 'pending')}
 			>
 				Subscribe
 			</button>
