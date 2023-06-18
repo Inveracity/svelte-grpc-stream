@@ -17,11 +17,12 @@ Whenever a user subscribes to realtime notifications, it creates a queue in NATS
 
 ```mermaid
 sequenceDiagram
-participant Alice
+autonumber
+actor Alice
 participant Relay
 participant Nats
 participant API
-participant Bob
+actor Bob
 
 Alice ->>+ Relay: subscribe to "events.Alice"
 Relay ->>- Nats: Create queue group "events" subject "Alice"
