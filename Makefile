@@ -1,8 +1,8 @@
 .PHONY: clean
-
 clean:
-	rm -rf internal/proto
-	rm -rf src/proto
+	rm -rf relay/internal/proto
+	rm -rf frontend/src/proto
+	rm -rf api/proto
 
 .PHONY: proto
 proto: clean
