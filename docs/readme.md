@@ -17,15 +17,25 @@ Whenever a user subscribes to realtime notifications, it creates a queue in NATS
 
 ```mermaid
 sequenceDiagram
-Alice ->> Relay: subscribe to "events.NAME"
-Relay ->> Nats: Create queue group "events" subject "NAME"
+participant Alice
+participant Relay
+participant Nats
+participant API
+participant Bob
+
+Alice ->>+ Relay: subscribe to "events.Alice"
+Relay ->>- Nats: Create queue group "events" subject "Alice"
 Nats -> Nats: "events.NAME" queue created
-Bob ->> API: POST /send-notification
-API ->> Nats: Publish(notification)
-loop Connection
-    Nats ->> Relay: NATS stream
-    Relay ->> Relay: convert NATS msg to gRPC
-    Relay ->> Alice: gRPC stream
+
+Bob ->>+ API: POST /send-notification to "events.Alice"
+API ->>- Nats: Publish msg to "events.Alice"
+
+loop Streaming
+    Nats -->+ Relay: NATS stream
+    Note over Relay: Relay convert NATS msg to gRPC
+    Relay --> Alice: gRPC server stream
+
+    Relay ->>- Nats: Ack msg
 end
 ```
 
