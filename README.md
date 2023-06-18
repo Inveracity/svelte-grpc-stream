@@ -15,25 +15,14 @@ This project consists of 5 infrastructure components
 
 ## Requirements
 
-- [node](nodejs.org) to run svelte app
-- [golang](go.dev) to run the golang server
-- [buf](buf.build) to generate code from protobuffers
-- [python 3.11](python.org) to run the python API
+- [node 20.3.0](nodejs.org) to run svelte app
+- [golang 1.20](go.dev) to run the golang server
+- [python 3.11.4](python.org) to run the python API
+- [buf 1.21.0](buf.build) to generate code from protobuffers
+- [docker 24.0.2](docker.com) to run services in docker compose
 
 ## Dev
 
-TODO: write a more comprehensive guide to getting set up
-
-```sh
-go mod tidy
-npm install
-make proto
-```
-
-```sh
-docker compose up --build
-```
-
-```bash
-npm run dev -- --open
-```
+- [relay](relay/readme.md)
+- [api](api/readme.md)
+- [frontend](frontend/readme.md)
