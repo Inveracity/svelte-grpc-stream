@@ -1,41 +1,43 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
-import type { SubscribeRequest } from './proto/notifications/v1/notifications';
+import type { Notification, SendRequest, SubscribeRequest } from './proto/notifications/v1/notifications';
 import { NotificationServiceClient } from './proto/notifications/v1/notifications.client';
 import { notifier } from './store';
 import { status } from './store';
 
+const transport = new GrpcWebFetchTransport({
+	baseUrl: 'http://relay.docker.localhost'
+});
+
 let controller = new AbortController();
 
-export const Subscribe = async (subscriberId: string) => {
+export const Subscribe = async (channelId: string, userId: string, timestamp: string) => {
 	// If the client disconnected, the abort controller is no longer valid and a new one must be created
 	if (controller.signal.aborted) {
 		controller = new AbortController();
 	}
 
-	// Create a new transport and client
-	const transport = new GrpcWebFetchTransport({
-		baseUrl: 'http://relay.docker.localhost',
-		abort: controller.signal
-	});
+	// The abort controller is used to signal the server to close the stream
+	transport.mergeOptions({abort: controller.signal});
 
 	const client = new NotificationServiceClient(transport);
 
 	// This request tells the server to open a stream to the client
-	const request: SubscribeRequest = { subid: subscriberId };
-	const call = client.notify(request);
+	const notification: Notification = { channelId: channelId, userId: userId, timestamp: timestamp };
+	const request: SubscribeRequest = { notification: notification };
+	const call = client.subscribe(request);
 
 	// While the connection is attempting to open, let the UI show a pending state
 	status.pending();
 
 	// If the connection fails, let the UI show an error state
-	call.status.catch((e) => {
+	call.status.catch((e: Error) => {
 		status.error(e.message);
 	});
 
 	// Listen for messages from the server
 	for await (const msg of call.responses) {
 		status.connected();
-		const message = `${msg.notifications?.sender}: ${msg.notifications?.text}`;
+		const message = `${msg.notification?.userId}: ${msg.notification?.text}`;
 		notifier.write(message);
 	}
 
@@ -51,3 +53,17 @@ export const Unsubscribe = async () => {
 	status.disconnected();
 	controller.abort();
 };
+
+export const SendNotification = (channelId: string, userId: string, text: string) => {
+	const client = new NotificationServiceClient(transport);
+
+	const request: SendRequest  = { 
+		notification: { 
+			channelId: channelId, 
+			userId: userId, 
+			text: text 
+		}
+	};
+
+	client.send(request);
+}

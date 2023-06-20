@@ -1,23 +1,43 @@
 syntax = "proto3";
 
-package notifications.v1;
+package proto.notifications.v1;
 
 option go_package = "internal/gen/notifications";
 
 service NotificationService {
-  rpc Notify(SubscribeRequest) returns (stream NotificationServiceNotifyResponse) {}
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
+  rpc Send(SendRequest) returns (SendResponse) {}
 }
 
 message Notification {
-  string subid = 1;
-  string text = 2;
-  string sender = 3;
+  string channel_id = 1;
+  string user_id = 2;
+  optional string text = 3;
+  optional string username = 4;
+  optional string timestamp = 5;
 }
 
-message NotificationServiceNotifyResponse {
-  Notification notifications = 1;
-}
+//// RECEIVE NOTIFICATIONS ////
 
+// The request payload to subscribe to a notification stream
 message SubscribeRequest {
-  string subid = 1;
+  Notification notification = 1;
+}
+
+// Notification server stream after subscribing to a channel
+message SubscribeResponse {
+  Notification notification = 1;
+}
+
+//// SEND NOTIFICATIONS ////
+
+// Streamed notification object
+message SendRequest {
+  Notification notification = 1;
+}
+
+// The response payload after sending a notification
+message SendResponse {
+  bool ok = 1;
+  string error = 2;
 }

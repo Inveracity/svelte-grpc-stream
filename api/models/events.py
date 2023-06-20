@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class Event(BaseModel):
-    subid: str
+class Notification(BaseModel):
+    channel_id: str
+    user_id: str
     text: str
-    sender: str

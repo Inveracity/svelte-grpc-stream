@@ -34,26 +34,26 @@ func Run(port int, nats string) {
 	}
 }
 
-func (s *server) Notify(in *pb.SubscribeRequest, srv pb.NotificationService_NotifyServer) error {
+func (s *server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_SubscribeServer) error {
 	ctx := srv.Context()
 	var wg sync.WaitGroup
 
-	log.Printf("connected: %s", in.Subid)
+	log.Printf("connected: %s", in.Notification.ChannelId)
 
 	eventChannel := make(chan nats.Msg)
 
-	go subscribe(ctx, s.nats, in.Subid, &eventChannel)
+	go NatsSub(ctx, s.nats, in.Notification.ChannelId, &eventChannel)
 
 	// send a "connected" message to the client
-	queueName := fmt.Sprintf("events.%s", in.Subid)
+	queueName := fmt.Sprintf("events.%s", in.Notification.ChannelId)
 	connectResponse := *nats.NewMsg(queueName)
-	connectResponse.Data = []byte(`{"subid":"` + in.Subid + `", "sender": "server", "text":"connected"}`)
+	connectResponse.Data = []byte(`{"ChannelId":"` + in.Notification.ChannelId + `", "sender": "server", "text":"connected"}`)
 	forwardEventToClient(connectResponse, srv)
 
 	for {
 		select {
 		case <-ctx.Done():
-			log.Printf("disconnected %s", in.Subid)
+			log.Printf("disconnected %s", in.Notification.ChannelId)
 			return nil
 		default:
 			for event := range eventChannel {
@@ -68,32 +68,32 @@ func (s *server) Notify(in *pb.SubscribeRequest, srv pb.NotificationService_Noti
 	}
 }
 
+// Send messages from NATS to the gRPC client
 func forwardEventToClient(
 	event nats.Msg,
-	srv pb.NotificationService_NotifyServer,
+	srv pb.NotificationService_SubscribeServer,
 ) {
+	var notification pb.Notification
 
-	var data pb.Notification
-	if err := json.Unmarshal(event.Data, &data); err != nil {
+	// unmarshal the nats message into a protobuf message
+	if err := json.Unmarshal(event.Data, &notification); err != nil {
 		log.Printf("unmarshal error %v", err)
 		return
 	}
 
-	n := pb.Notification{
-		Subid:  data.Subid,
-		Text:   data.Text,
-		Sender: data.Sender,
-	}
-
-	resp := &pb.NotificationServiceNotifyResponse{Notifications: &n}
+	resp := &pb.SubscribeResponse{Notification: &notification}
 	if err := srv.Send(resp); err != nil {
 		log.Printf("send error %v", err)
 		return
 	}
+
+	// Ack the NATS message so it's not sent again
 	event.Ack()
 }
 
-func subscribe(ctx context.Context, url, subscriberId string, events *chan nats.Msg) error {
+// Subscribe to NATS
+// TODO: make this a separate package
+func NatsSub(ctx context.Context, url, channelId string, events *chan nats.Msg) error {
 	nc, err := nats.Connect(url)
 	if err != nil {
 		return err
@@ -113,8 +113,8 @@ func subscribe(ctx context.Context, url, subscriberId string, events *chan nats.
 
 	js.AddStream(cfg)
 
-	subject := "events." + subscriberId
-	sub, err := js.PullSubscribe(subject, subscriberId, nats.BindStream(cfg.Name))
+	subject := "events." + channelId
+	sub, err := js.PullSubscribe(subject, channelId, nats.BindStream(cfg.Name))
 	if err != nil {
 		panic(err)
 	}
@@ -122,7 +122,7 @@ func subscribe(ctx context.Context, url, subscriberId string, events *chan nats.
 	for {
 		select {
 		case <-ctx.Done():
-			log.Printf("unsubscribing disconnected client: %s", subscriberId)
+			log.Printf("unsubscribing disconnected client: %s", channelId)
 			sub.Unsubscribe()
 			return nil
 
