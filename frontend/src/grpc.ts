@@ -57,13 +57,18 @@ export const Unsubscribe = async () => {
 export const SendNotification = (channelId: string, userId: string, text: string) => {
 	const client = new NotificationServiceClient(transport);
 
-	const request: SendRequest  = { 
-		notification: { 
-			channelId: channelId, 
-			userId: userId, 
-			text: text 
+	const request: SendRequest  = {
+		notification: {
+			channelId: channelId,
+			userId: userId,
+			text: text,
 		}
 	};
 
-	client.send(request);
+	client.send(request).then((response) => {
+
+		console.log(response.status.code);
+	}).catch((e) => {
+		console.log(e);
+	});
 }

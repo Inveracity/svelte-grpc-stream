@@ -1,4 +1,4 @@
-from python:3.11-alpine
+FROM python:3.11-alpine
 
 RUN mkdir -p /app/api
 COPY api /app/api

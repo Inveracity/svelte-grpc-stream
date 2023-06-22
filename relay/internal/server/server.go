@@ -34,6 +34,29 @@ func Run(port int, nats string) {
 	}
 }
 
+func (s *server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse, error) {
+	log.Printf("user: %s sent: %s to channel: %s", in.Notification.UserId, *in.Notification.Text, in.Notification.ChannelId)
+	nc, err := nats.Connect(s.nats)
+	if err != nil {
+		return nil, err
+	}
+
+	subject := "events." + in.Notification.ChannelId
+	msg := nats.NewMsg(subject)
+	msg.Data = []byte(fmt.Sprintf(
+		`{"ChannelId":"%s", "userId": "%s", "text":"%s"}`,
+		in.Notification.ChannelId,
+		in.Notification.UserId,
+		*in.Notification.Text,
+	))
+
+	if err := nc.PublishMsg(msg); err != nil {
+		return nil, err
+	}
+
+	return &pb.SendResponse{}, nil
+}
+
 func (s *server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_SubscribeServer) error {
 	ctx := srv.Context()
 	var wg sync.WaitGroup
@@ -47,7 +70,7 @@ func (s *server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_S
 	// send a "connected" message to the client
 	queueName := fmt.Sprintf("events.%s", in.Notification.ChannelId)
 	connectResponse := *nats.NewMsg(queueName)
-	connectResponse.Data = []byte(`{"ChannelId":"` + in.Notification.ChannelId + `", "sender": "server", "text":"connected"}`)
+	connectResponse.Data = []byte(`{"ChannelId":"` + in.Notification.ChannelId + `", "userId": "server", "text":"connected"}`)
 	forwardEventToClient(connectResponse, srv)
 
 	for {
@@ -99,22 +122,9 @@ func NatsSub(ctx context.Context, url, channelId string, events *chan nats.Msg) 
 		return err
 	}
 
-	js, err := nc.JetStream()
-
-	if err != nil {
-		return err
-	}
-
-	cfg := &nats.StreamConfig{
-		Name:      "EVENTS",
-		Retention: nats.WorkQueuePolicy,
-		Subjects:  []string{"events.>"},
-	}
-
-	js.AddStream(cfg)
-
 	subject := "events." + channelId
-	sub, err := js.PullSubscribe(subject, channelId, nats.BindStream(cfg.Name))
+	msgChan := make(chan *nats.Msg, 64)
+	sub, err := nc.ChanSubscribe(subject, msgChan)
 	if err != nil {
 		panic(err)
 	}
