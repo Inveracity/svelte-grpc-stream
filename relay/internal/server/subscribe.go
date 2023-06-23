@@ -6,6 +6,7 @@ import (
 
 	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/notifications/v1"
 	"github.com/nats-io/nats.go"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (s *server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_SubscribeServer) error {
@@ -21,8 +22,9 @@ func (s *server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_S
 	go NatsSub(ctx, s.nats, in.ChannelId, &eventChannel)
 
 	// send a "connected" message to the client to tell the client it successfully connected
-	VerifySubscription(srv, in)
+	verifySubscription(srv, in)
 
+	// Receive messages from the NATS loop and forward them to the client
 	for {
 		select {
 		case <-ctx.Done():
@@ -33,7 +35,7 @@ func (s *server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_S
 				wg.Add(1)
 				go func(event nats.Msg) {
 					defer wg.Done()
-					forwardEventToClient(event, srv)
+					relay(event, srv)
 				}(event)
 			}
 		}
@@ -41,6 +43,30 @@ func (s *server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_S
 	}
 }
 
-func VerifySubscription(srv pb.NotificationService_SubscribeServer, in *pb.SubscribeRequest) {
+func verifySubscription(srv pb.NotificationService_SubscribeServer, in *pb.SubscribeRequest) {
 	srv.Send(&pb.SubscribeResponse{ChannelId: in.ChannelId, UserId: "server", Text: "connected"})
+}
+
+// Send messages from NATS to the gRPC client
+func relay(
+	event nats.Msg,
+	srv pb.NotificationService_SubscribeServer,
+) {
+	var notification pb.SubscribeResponse
+
+	log.Printf("forwarding event from nats to grpc: %s", string(event.Data))
+	// unmarshal the nats message into a protobuf message
+	j := protojson.UnmarshalOptions{}
+	if err := j.Unmarshal(event.Data, &notification); err != nil {
+		log.Printf("unmarshal error %v", err)
+		return
+	}
+
+	if err := srv.Send(&notification); err != nil {
+		log.Printf("send error %v", err)
+		return
+	}
+
+	// Ack the NATS message so it's not sent again
+	event.Ack()
 }
