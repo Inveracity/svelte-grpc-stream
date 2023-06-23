@@ -9,31 +9,28 @@ service NotificationService {
   rpc Send(SendRequest) returns (SendResponse) {}
 }
 
-message Notification {
-  string channel_id = 1;
-  string user_id = 2;
-  optional string text = 3;
-  optional string username = 4;
-  optional string timestamp = 5;
-}
-
 //// RECEIVE NOTIFICATIONS ////
 
 // The request payload to subscribe to a notification stream
 message SubscribeRequest {
-  Notification notification = 1;
+  string channel_id = 1;
+  string user_id = 2;
 }
 
 // Notification server stream after subscribing to a channel
 message SubscribeResponse {
-  Notification notification = 1;
+  string channel_id = 1;
+  string user_id = 2;
+  string text = 3;
 }
 
 //// SEND NOTIFICATIONS ////
 
 // Streamed notification object
 message SendRequest {
-  Notification notification = 1;
+  string channel_id = 1;
+  string user_id = 2;
+  string text = 3;
 }
 
 // The response payload after sending a notification

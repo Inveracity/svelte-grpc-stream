@@ -12,31 +12,6 @@ import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
-/**
- * @generated from protobuf message proto.notifications.v1.Notification
- */
-export interface Notification {
-    /**
-     * @generated from protobuf field: string channel_id = 1;
-     */
-    channelId: string;
-    /**
-     * @generated from protobuf field: string user_id = 2;
-     */
-    userId: string;
-    /**
-     * @generated from protobuf field: optional string text = 3;
-     */
-    text?: string;
-    /**
-     * @generated from protobuf field: optional string username = 4;
-     */
-    username?: string;
-    /**
-     * @generated from protobuf field: optional string timestamp = 5;
-     */
-    timestamp?: string;
-}
 // // RECEIVE NOTIFICATIONS ////
 
 /**
@@ -46,9 +21,13 @@ export interface Notification {
  */
 export interface SubscribeRequest {
     /**
-     * @generated from protobuf field: proto.notifications.v1.Notification notification = 1;
+     * @generated from protobuf field: string channel_id = 1;
      */
-    notification?: Notification;
+    channelId: string;
+    /**
+     * @generated from protobuf field: string user_id = 2;
+     */
+    userId: string;
 }
 /**
  * Notification server stream after subscribing to a channel
@@ -57,9 +36,17 @@ export interface SubscribeRequest {
  */
 export interface SubscribeResponse {
     /**
-     * @generated from protobuf field: proto.notifications.v1.Notification notification = 1;
+     * @generated from protobuf field: string channel_id = 1;
      */
-    notification?: Notification;
+    channelId: string;
+    /**
+     * @generated from protobuf field: string user_id = 2;
+     */
+    userId: string;
+    /**
+     * @generated from protobuf field: string text = 3;
+     */
+    text: string;
 }
 // // SEND NOTIFICATIONS ////
 
@@ -70,9 +57,17 @@ export interface SubscribeResponse {
  */
 export interface SendRequest {
     /**
-     * @generated from protobuf field: proto.notifications.v1.Notification notification = 1;
+     * @generated from protobuf field: string channel_id = 1;
      */
-    notification?: Notification;
+    channelId: string;
+    /**
+     * @generated from protobuf field: string user_id = 2;
+     */
+    userId: string;
+    /**
+     * @generated from protobuf field: string text = 3;
+     */
+    text: string;
 }
 /**
  * The response payload after sending a notification
@@ -90,89 +85,15 @@ export interface SendResponse {
     error: string;
 }
 // @generated message type with reflection information, may provide speed optimized methods
-class Notification$Type extends MessageType<Notification> {
-    constructor() {
-        super("proto.notifications.v1.Notification", [
-            { no: 1, name: "channel_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "text", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "username", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "timestamp", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<Notification>): Notification {
-        const message = { channelId: "", userId: "" };
-        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
-        if (value !== undefined)
-            reflectionMergePartial<Notification>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Notification): Notification {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string channel_id */ 1:
-                    message.channelId = reader.string();
-                    break;
-                case /* string user_id */ 2:
-                    message.userId = reader.string();
-                    break;
-                case /* optional string text */ 3:
-                    message.text = reader.string();
-                    break;
-                case /* optional string username */ 4:
-                    message.username = reader.string();
-                    break;
-                case /* optional string timestamp */ 5:
-                    message.timestamp = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: Notification, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string channel_id = 1; */
-        if (message.channelId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.channelId);
-        /* string user_id = 2; */
-        if (message.userId !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.userId);
-        /* optional string text = 3; */
-        if (message.text !== undefined)
-            writer.tag(3, WireType.LengthDelimited).string(message.text);
-        /* optional string username = 4; */
-        if (message.username !== undefined)
-            writer.tag(4, WireType.LengthDelimited).string(message.username);
-        /* optional string timestamp = 5; */
-        if (message.timestamp !== undefined)
-            writer.tag(5, WireType.LengthDelimited).string(message.timestamp);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message proto.notifications.v1.Notification
- */
-export const Notification = new Notification$Type();
-// @generated message type with reflection information, may provide speed optimized methods
 class SubscribeRequest$Type extends MessageType<SubscribeRequest> {
     constructor() {
         super("proto.notifications.v1.SubscribeRequest", [
-            { no: 1, name: "notification", kind: "message", T: () => Notification }
+            { no: 1, name: "channel_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SubscribeRequest>): SubscribeRequest {
-        const message = {};
+        const message = { channelId: "", userId: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SubscribeRequest>(this, message, value);
@@ -183,8 +104,11 @@ class SubscribeRequest$Type extends MessageType<SubscribeRequest> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* proto.notifications.v1.Notification notification */ 1:
-                    message.notification = Notification.internalBinaryRead(reader, reader.uint32(), options, message.notification);
+                case /* string channel_id */ 1:
+                    message.channelId = reader.string();
+                    break;
+                case /* string user_id */ 2:
+                    message.userId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -198,9 +122,12 @@ class SubscribeRequest$Type extends MessageType<SubscribeRequest> {
         return message;
     }
     internalBinaryWrite(message: SubscribeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* proto.notifications.v1.Notification notification = 1; */
-        if (message.notification)
-            Notification.internalBinaryWrite(message.notification, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* string channel_id = 1; */
+        if (message.channelId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.channelId);
+        /* string user_id = 2; */
+        if (message.userId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.userId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -215,11 +142,13 @@ export const SubscribeRequest = new SubscribeRequest$Type();
 class SubscribeResponse$Type extends MessageType<SubscribeResponse> {
     constructor() {
         super("proto.notifications.v1.SubscribeResponse", [
-            { no: 1, name: "notification", kind: "message", T: () => Notification }
+            { no: 1, name: "channel_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SubscribeResponse>): SubscribeResponse {
-        const message = {};
+        const message = { channelId: "", userId: "", text: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SubscribeResponse>(this, message, value);
@@ -230,8 +159,14 @@ class SubscribeResponse$Type extends MessageType<SubscribeResponse> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* proto.notifications.v1.Notification notification */ 1:
-                    message.notification = Notification.internalBinaryRead(reader, reader.uint32(), options, message.notification);
+                case /* string channel_id */ 1:
+                    message.channelId = reader.string();
+                    break;
+                case /* string user_id */ 2:
+                    message.userId = reader.string();
+                    break;
+                case /* string text */ 3:
+                    message.text = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -245,9 +180,15 @@ class SubscribeResponse$Type extends MessageType<SubscribeResponse> {
         return message;
     }
     internalBinaryWrite(message: SubscribeResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* proto.notifications.v1.Notification notification = 1; */
-        if (message.notification)
-            Notification.internalBinaryWrite(message.notification, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* string channel_id = 1; */
+        if (message.channelId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.channelId);
+        /* string user_id = 2; */
+        if (message.userId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.userId);
+        /* string text = 3; */
+        if (message.text !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.text);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -262,11 +203,13 @@ export const SubscribeResponse = new SubscribeResponse$Type();
 class SendRequest$Type extends MessageType<SendRequest> {
     constructor() {
         super("proto.notifications.v1.SendRequest", [
-            { no: 1, name: "notification", kind: "message", T: () => Notification }
+            { no: 1, name: "channel_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SendRequest>): SendRequest {
-        const message = {};
+        const message = { channelId: "", userId: "", text: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SendRequest>(this, message, value);
@@ -277,8 +220,14 @@ class SendRequest$Type extends MessageType<SendRequest> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* proto.notifications.v1.Notification notification */ 1:
-                    message.notification = Notification.internalBinaryRead(reader, reader.uint32(), options, message.notification);
+                case /* string channel_id */ 1:
+                    message.channelId = reader.string();
+                    break;
+                case /* string user_id */ 2:
+                    message.userId = reader.string();
+                    break;
+                case /* string text */ 3:
+                    message.text = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -292,9 +241,15 @@ class SendRequest$Type extends MessageType<SendRequest> {
         return message;
     }
     internalBinaryWrite(message: SendRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* proto.notifications.v1.Notification notification = 1; */
-        if (message.notification)
-            Notification.internalBinaryWrite(message.notification, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* string channel_id = 1; */
+        if (message.channelId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.channelId);
+        /* string user_id = 2; */
+        if (message.userId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.userId);
+        /* string text = 3; */
+        if (message.text !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.text);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

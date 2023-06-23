@@ -1,5 +1,5 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
-import type { Notification, SendRequest, SubscribeRequest } from './proto/notifications/v1/notifications';
+import type { SendRequest, SubscribeRequest } from './proto/notifications/v1/notifications';
 import { NotificationServiceClient } from './proto/notifications/v1/notifications.client';
 import { notifier } from './store';
 import { status } from './store';
@@ -22,8 +22,10 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
 	const client = new NotificationServiceClient(transport);
 
 	// This request tells the server to open a stream to the client
-	const notification: Notification = { channelId: channelId, userId: userId, timestamp: timestamp };
-	const request: SubscribeRequest = { notification: notification };
+	const request: SubscribeRequest = {
+		channelId: channelId,
+		userId: userId,
+	};
 	const call = client.subscribe(request);
 
 	// While the connection is attempting to open, let the UI show a pending state
@@ -37,7 +39,8 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
 	// Listen for messages from the server
 	for await (const msg of call.responses) {
 		status.connected();
-		const message = `${msg.notification?.userId}: ${msg.notification?.text}`;
+		console.log(msg)
+		const message = `${msg.channelId}/${msg.userId}: ${msg.text}`;
 		notifier.write(message);
 	}
 
@@ -58,11 +61,9 @@ export const SendNotification = (channelId: string, userId: string, text: string
 	const client = new NotificationServiceClient(transport);
 
 	const request: SendRequest  = {
-		notification: {
 			channelId: channelId,
 			userId: userId,
 			text: text,
-		}
 	};
 
 	client.send(request).then((response) => {
