@@ -19,14 +19,14 @@ services:
       - "4222:4222"
     command: nats-server -js -m 8222 -D -l /dev/null
 
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: redis
-  #   ports:
-  #     - "6379:6379"
-  #   # volumes:
-  #   #   - ./data/redis:/data
-  #   command: redis-server --appendonly yes
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    # volumes:
+    #   - ./data/redis:/data
+    command: redis-server --appendonly yes
 
   relay:
     depends_on:

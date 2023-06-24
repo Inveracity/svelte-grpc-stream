@@ -6,9 +6,11 @@ import (
 	"log"
 	"net"
 	"sync"
+	"time"
 
 	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/notifications/v1"
 	"github.com/nats-io/nats.go"
+	"github.com/redis/go-redis/v9"
 
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -16,17 +18,29 @@ import (
 
 type server struct {
 	pb.UnimplementedNotificationServiceServer
-	nats string
+	redis *redis.Client
+	nats  string
 }
 
-func Run(port int, nats string) {
+func Run(port int, nats string, redisAddr string) {
 	lis, err := net.Listen("tcp4", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     redisAddr,
+		Password: "",
+		DB:       0,
+	})
+
+	server := &server{
+		redis: redisClient,
+		nats:  nats,
+	}
+
 	s := grpc.NewServer()
-	pb.RegisterNotificationServiceServer(s, &server{nats: nats})
+	pb.RegisterNotificationServiceServer(s, server)
 	log.Printf("GRPC: server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
@@ -47,6 +61,23 @@ func (s *server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_S
 
 	// send a "connected" message to the client to tell the client it successfully connected
 	verifySubscription(srv, in)
+	pastMessage, err := s.LoadHistory(ctx, in.ChannelId, in.LastTs)
+	if err != nil {
+		return err
+	}
+
+	for _, message := range pastMessage {
+		var notification pb.Notification
+		j := protojson.UnmarshalOptions{}
+		if err := j.Unmarshal([]byte(message), &notification); err != nil {
+			log.Printf("unmarshal error %v", err)
+			return err
+		}
+		if err := srv.Send(&notification); err != nil {
+			log.Printf("send error %v", err)
+			return err
+		}
+	}
 
 	// Receive messages from the NATS loop and forward them to the client
 	for {
@@ -77,13 +108,16 @@ func (s *server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse
 
 	subject := "events." + in.ChannelId
 	msg := nats.NewMsg(subject)
+
 	j := protojson.MarshalOptions{UseProtoNames: true}
 	payload, err := j.Marshal(in)
 	if err != nil {
 		return nil, err
 	}
-	msg.Data = []byte(payload)
 
+	msg.Data = payload
+
+	s.Store(ctx, string(payload), in.ChannelId)
 	if err := nc.PublishMsg(msg); err != nil {
 		return nil, err
 	}
@@ -92,12 +126,12 @@ func (s *server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse
 }
 
 func verifySubscription(srv pb.NotificationService_SubscribeServer, in *pb.SubscribeRequest) {
-	srv.Send(&pb.SubscribeResponse{ChannelId: in.ChannelId, UserId: "server", Text: "connected"})
+	srv.Send(&pb.Notification{ChannelId: in.ChannelId, UserId: "server", Text: "connected"})
 }
 
 // Send messages from NATS to the gRPC client
 func relay(event nats.Msg, srv pb.NotificationService_SubscribeServer) {
-	var notification pb.SubscribeResponse
+	var notification pb.Notification
 
 	log.Printf("forwarding event from nats to grpc: %s", string(event.Data))
 	// unmarshal the nats message into a protobuf message
@@ -107,6 +141,8 @@ func relay(event nats.Msg, srv pb.NotificationService_SubscribeServer) {
 		return
 	}
 
+	notification.Ts = fmt.Sprint(time.Now().UnixNano())
+
 	if err := srv.Send(&notification); err != nil {
 		log.Printf("send error %v", err)
 		return
@@ -114,4 +150,44 @@ func relay(event nats.Msg, srv pb.NotificationService_SubscribeServer) {
 
 	// Ack the NATS message so it's not sent again
 	event.Ack()
+}
+
+// Store messages in Redis
+func (s *server) Store(ctx context.Context, payload, channelid string) error {
+	z := redis.ZAddArgs{
+		Members: []redis.Z{
+			{
+				Score:  float64(time.Now().UnixNano()),
+				Member: payload,
+			},
+		},
+	}
+
+	ret := s.redis.ZAddArgs(ctx, "events:"+channelid, z)
+
+	if ret.Err() != nil {
+		return ret.Err()
+	}
+
+	return nil
+}
+
+// LoadHistory expects a client to know the timestamp of the last message it received in order to retreive all unread messages.
+// If the client has never received a message, it should pass 0 as the LastTimestamp.
+func (s *server) LoadHistory(ctx context.Context, channelid, LastTimestamp string) ([]string, error) {
+	// Construct a query to get all messages since LastTimestamp
+	q := redis.ZRangeArgs{
+		Key:     "events:" + channelid,
+		Start:   LastTimestamp,
+		Stop:    "+inf",
+		ByScore: true,
+		Count:   100,
+	}
+
+	messages, err := s.redis.ZRangeArgs(ctx, q).Result()
+	if err != nil {
+		return []string{}, err
+	}
+
+	return messages, nil
 }

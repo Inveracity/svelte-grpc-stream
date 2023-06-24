@@ -55,7 +55,7 @@ func (c *notificationServiceClient) Subscribe(ctx context.Context, in *Subscribe
 }
 
 type NotificationService_SubscribeClient interface {
-	Recv() (*SubscribeResponse, error)
+	Recv() (*Notification, error)
 	grpc.ClientStream
 }
 
@@ -63,8 +63,8 @@ type notificationServiceSubscribeClient struct {
 	grpc.ClientStream
 }
 
-func (x *notificationServiceSubscribeClient) Recv() (*SubscribeResponse, error) {
-	m := new(SubscribeResponse)
+func (x *notificationServiceSubscribeClient) Recv() (*Notification, error) {
+	m := new(Notification)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func _NotificationService_Subscribe_Handler(srv interface{}, stream grpc.ServerS
 }
 
 type NotificationService_SubscribeServer interface {
-	Send(*SubscribeResponse) error
+	Send(*Notification) error
 	grpc.ServerStream
 }
 
@@ -129,7 +129,7 @@ type notificationServiceSubscribeServer struct {
 	grpc.ServerStream
 }
 
-func (x *notificationServiceSubscribeServer) Send(m *SubscribeResponse) error {
+func (x *notificationServiceSubscribeServer) Send(m *Notification) error {
 	return x.ServerStream.SendMsg(m)
 }
 

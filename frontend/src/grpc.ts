@@ -1,8 +1,15 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
-import type { SendRequest, SubscribeRequest } from './proto/notifications/v1/notifications';
 import { NotificationServiceClient } from './proto/notifications/v1/notifications.client';
 import { notifier } from './store';
 import { status } from './store';
+import { persisted } from 'svelte-local-storage-store'
+import { get } from 'svelte/store'
+
+export const notifications_cache = persisted(
+	'notifications', // storage
+	{lastTs: '0'}, // default value
+	{storage: 'session'} // options
+)
 
 const transport = new GrpcWebFetchTransport({
 	baseUrl: 'http://relay.docker.localhost'
@@ -19,8 +26,11 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
 	// The abort controller is used to signal the server to close the stream
 	const opts = transport.mergeOptions({abort: controller.signal});
 
+	// Get the last timestamp from the cache
+	let lastTs = get(notifications_cache).lastTs
+
 	// Create a new subscription to the server
-	const sub = new NotificationServiceClient(transport).subscribe({channelId, userId}, opts);
+	const sub = new NotificationServiceClient(transport).subscribe({channelId, userId, lastTs}, opts);
 
 	// While the connection is attempting to open, let the UI show a pending state
 	status.pending();
@@ -36,6 +46,7 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
 			status.connected();
 			const message = `${msg.channelId}/${msg.userId}: ${msg.text}`;
 			notifier.write(message);
+			notifications_cache.set({lastTs: msg.ts})
 		}
 	} catch (e: any) {
 			console.log("Stream closed");
@@ -52,7 +63,7 @@ export const Unsubscribe = async () => {
 export const SendNotification = (channelId: string, userId: string, text: string) => {
 	const client = new NotificationServiceClient(transport);
 
-	const request: SendRequest  = {
+	const request = {
 			channelId: channelId,
 			userId: userId,
 			text: text,

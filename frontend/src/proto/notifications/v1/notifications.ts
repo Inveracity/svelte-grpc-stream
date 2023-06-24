@@ -28,13 +28,17 @@ export interface SubscribeRequest {
      * @generated from protobuf field: string user_id = 2;
      */
     userId: string;
+    /**
+     * @generated from protobuf field: string last_ts = 3;
+     */
+    lastTs: string; // last timestamp received by the client
 }
 /**
  * Notification server stream after subscribing to a channel
  *
- * @generated from protobuf message proto.notifications.v1.SubscribeResponse
+ * @generated from protobuf message proto.notifications.v1.Notification
  */
-export interface SubscribeResponse {
+export interface Notification {
     /**
      * @generated from protobuf field: string channel_id = 1;
      */
@@ -47,6 +51,10 @@ export interface SubscribeResponse {
      * @generated from protobuf field: string text = 3;
      */
     text: string;
+    /**
+     * @generated from protobuf field: string ts = 4;
+     */
+    ts: string; // timestamp
 }
 // // SEND NOTIFICATIONS ////
 
@@ -89,11 +97,12 @@ class SubscribeRequest$Type extends MessageType<SubscribeRequest> {
     constructor() {
         super("proto.notifications.v1.SubscribeRequest", [
             { no: 1, name: "channel_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "last_ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SubscribeRequest>): SubscribeRequest {
-        const message = { channelId: "", userId: "" };
+        const message = { channelId: "", userId: "", lastTs: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SubscribeRequest>(this, message, value);
@@ -109,6 +118,9 @@ class SubscribeRequest$Type extends MessageType<SubscribeRequest> {
                     break;
                 case /* string user_id */ 2:
                     message.userId = reader.string();
+                    break;
+                case /* string last_ts */ 3:
+                    message.lastTs = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -128,6 +140,9 @@ class SubscribeRequest$Type extends MessageType<SubscribeRequest> {
         /* string user_id = 2; */
         if (message.userId !== "")
             writer.tag(2, WireType.LengthDelimited).string(message.userId);
+        /* string last_ts = 3; */
+        if (message.lastTs !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.lastTs);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -139,22 +154,23 @@ class SubscribeRequest$Type extends MessageType<SubscribeRequest> {
  */
 export const SubscribeRequest = new SubscribeRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class SubscribeResponse$Type extends MessageType<SubscribeResponse> {
+class Notification$Type extends MessageType<Notification> {
     constructor() {
-        super("proto.notifications.v1.SubscribeResponse", [
+        super("proto.notifications.v1.Notification", [
             { no: 1, name: "channel_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 3, name: "text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<SubscribeResponse>): SubscribeResponse {
-        const message = { channelId: "", userId: "", text: "" };
+    create(value?: PartialMessage<Notification>): Notification {
+        const message = { channelId: "", userId: "", text: "", ts: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
-            reflectionMergePartial<SubscribeResponse>(this, message, value);
+            reflectionMergePartial<Notification>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubscribeResponse): SubscribeResponse {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Notification): Notification {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
@@ -168,6 +184,9 @@ class SubscribeResponse$Type extends MessageType<SubscribeResponse> {
                 case /* string text */ 3:
                     message.text = reader.string();
                     break;
+                case /* string ts */ 4:
+                    message.ts = reader.string();
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -179,7 +198,7 @@ class SubscribeResponse$Type extends MessageType<SubscribeResponse> {
         }
         return message;
     }
-    internalBinaryWrite(message: SubscribeResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: Notification, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string channel_id = 1; */
         if (message.channelId !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.channelId);
@@ -189,6 +208,9 @@ class SubscribeResponse$Type extends MessageType<SubscribeResponse> {
         /* string text = 3; */
         if (message.text !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.text);
+        /* string ts = 4; */
+        if (message.ts !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.ts);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -196,9 +218,9 @@ class SubscribeResponse$Type extends MessageType<SubscribeResponse> {
     }
 }
 /**
- * @generated MessageType for protobuf message proto.notifications.v1.SubscribeResponse
+ * @generated MessageType for protobuf message proto.notifications.v1.Notification
  */
-export const SubscribeResponse = new SubscribeResponse$Type();
+export const Notification = new Notification$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SendRequest$Type extends MessageType<SendRequest> {
     constructor() {
@@ -318,6 +340,6 @@ export const SendResponse = new SendResponse$Type();
  * @generated ServiceType for protobuf service proto.notifications.v1.NotificationService
  */
 export const NotificationService = new ServiceType("proto.notifications.v1.NotificationService", [
-    { name: "Subscribe", serverStreaming: true, options: {}, I: SubscribeRequest, O: SubscribeResponse },
+    { name: "Subscribe", serverStreaming: true, options: {}, I: SubscribeRequest, O: Notification },
     { name: "Send", options: {}, I: SendRequest, O: SendResponse }
 ]);
