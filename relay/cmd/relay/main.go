@@ -1,9 +1,10 @@
 package main
 
 import (
+	"context"
 	"flag"
 
-	"github.com/inveracity/svelte-grpc-stream/internal/server"
+	"github.com/inveracity/svelte-grpc-stream/internal/relay"
 )
 
 var (
@@ -14,5 +15,10 @@ var (
 
 func main() {
 	flag.Parse()
-	server.Run(*port, *nats, *redis)
+	ctx := context.Background()
+	relay := relay.NewRelay(ctx, *port, *nats, *redis)
+	err := relay.Run()
+	if err != nil {
+		panic(err)
+	}
 }
