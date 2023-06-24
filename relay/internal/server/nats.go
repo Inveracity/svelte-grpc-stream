@@ -18,7 +18,7 @@ func NatsSub(ctx context.Context, url, channelId string, events *chan nats.Msg) 
 	msgChan := make(chan *nats.Msg, 64)
 	sub, err := nc.ChanSubscribe(subject, msgChan)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	for {
@@ -27,11 +27,10 @@ func NatsSub(ctx context.Context, url, channelId string, events *chan nats.Msg) 
 			log.Printf("NATS: unsubscribing disconnected client: %s", channelId)
 			sub.Unsubscribe()
 			return nil
-
 		default:
 			msg, err := sub.NextMsgWithContext(ctx)
 			if err != nil {
-				log.Printf("next message error: %v", err)
+				// Context is canceled, or connection is closed
 				continue
 			}
 

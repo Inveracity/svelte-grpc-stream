@@ -17,43 +17,35 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
 	}
 
 	// The abort controller is used to signal the server to close the stream
-	transport.mergeOptions({abort: controller.signal});
+	const opts = transport.mergeOptions({abort: controller.signal});
 
-	const client = new NotificationServiceClient(transport);
-
-	// This request tells the server to open a stream to the client
-	const request: SubscribeRequest = {
-		channelId: channelId,
-		userId: userId,
-	};
-	const call = client.subscribe(request);
+	// Create a new subscription to the server
+	const sub = new NotificationServiceClient(transport).subscribe({channelId, userId}, opts);
 
 	// While the connection is attempting to open, let the UI show a pending state
 	status.pending();
 
 	// If the connection fails, let the UI show an error state
-	call.status.catch((e: Error) => {
+	sub.status.catch((e: Error) => {
 		status.error(e.message);
 	});
 
 	// Listen for messages from the server
-	for await (const msg of call.responses) {
-		status.connected();
-		console.log(msg)
-		const message = `${msg.channelId}/${msg.userId}: ${msg.text}`;
-		notifier.write(message);
+	try {
+		for await (const msg of sub.responses) {
+			status.connected();
+			const message = `${msg.channelId}/${msg.userId}: ${msg.text}`;
+			notifier.write(message);
+		}
+	} catch (e: any) {
+			console.log("Stream closed");
 	}
 
-	await call.status;
-	await call.trailers;
-
 	status.disconnected();
-	controller.abort();
 };
 
 // The client can actively unsubscribe letting the server know to close the stream
 export const Unsubscribe = async () => {
-	status.disconnected();
 	controller.abort();
 };
 
