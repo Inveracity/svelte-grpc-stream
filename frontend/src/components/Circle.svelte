@@ -2,7 +2,7 @@
     export let color: string = "red";
 </script>
 
-<div class="circle" id={color}></div>
+<div class="circle" id={color} />
 
 <style>
 .circle{
@@ -11,8 +11,9 @@
     border-radius:8px;
     width:8px;
     height:8px;
+    display: flex;
     justify-content: center;
-    text-align: center; /* This is not aligning the circle horizontally */
+    text-align: center;
 }
 
 #red {

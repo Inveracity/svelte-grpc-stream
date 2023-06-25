@@ -6,6 +6,7 @@ import { status } from './store';
 import { persisted } from 'svelte-local-storage-store'
 import { get } from 'svelte/store'
 import { DateTime } from 'luxon';
+import type { Message } from './types';
 
 export const notifications_cache = persisted(
 	'notifications', // storage
@@ -52,7 +53,12 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
 
 			// Format timestamp
 			const ts = timestampToDate(msg.ts)
-			const message = `${ts} ${msg.channelId}/${msg.userId}: ${msg.text}`;
+			const message: Message = {
+				message: msg.text,
+				timestamp: ts,
+				channel: msg.channelId,
+				user: msg.userId,
+			}
 
 			notifier.write(message);
 			notifications_cache.set({lastTs: msg.ts})

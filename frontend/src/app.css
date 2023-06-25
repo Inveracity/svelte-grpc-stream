@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Montserrat&family=Roboto+Mono&display=swap');
+
 body {
     background-color: #191b1c;
     color: #fff;
+    font-family: 'Montserrat', Courier;
 }
 
 div {
@@ -10,16 +13,14 @@ div {
 nav {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: start;
     align-items: center;
-    background-color: #538edc4c;
-    padding: 10px;
     border-radius: 5px;
 }
 
 p {
     margin: 10px;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'montserrat', Courier;
 }
 
 button {
@@ -39,6 +40,7 @@ button:hover {
 
 input {
     background-color: #fff;
+    font-family: 'Roboto Mono', monospace;
     color: #000;
     border-style: none;
     border-radius: 5px;

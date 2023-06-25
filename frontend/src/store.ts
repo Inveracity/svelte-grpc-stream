@@ -1,16 +1,19 @@
 import { writable } from 'svelte/store';
+import type { Message } from './types';
 
 const createNotifier = () => {
-	const { subscribe, set, update } = writable(['']);
+	const { subscribe, set, update } = writable<Message[]>([]);
 
 	return {
 		subscribe,
-		write: (item: string | undefined) =>
+		write: (item: Message | undefined) =>
 			update((notifs) => {
-				notifs.push(item ? item : '');
+				if (item) {
+					notifs.push(item);
+				}
 				return notifs;
 			}),
-		reset: () => set([''])
+		reset: () => set([])
 	};
 };
 
