@@ -2,141 +2,136 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"sync"
 	"time"
 
+	"github.com/inveracity/svelte-grpc-stream/internal/cache"
 	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/notifications/v1"
+	"github.com/inveracity/svelte-grpc-stream/internal/queue"
 	"github.com/nats-io/nats.go"
 
-	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
-type server struct {
+type Server struct {
 	pb.UnimplementedNotificationServiceServer
-	nats string
+	cache *cache.Cache
+	queue *queue.Queue
 }
 
-func Run(port int, nats string) {
-	lis, err := net.Listen("tcp4", fmt.Sprintf(":%d", port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	s := grpc.NewServer()
-	pb.RegisterNotificationServiceServer(s, &server{nats: nats})
-	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+func NewServer(cache *cache.Cache, queue *queue.Queue) *Server {
+	return &Server{
+		cache: cache,
+		queue: queue,
 	}
 }
 
-func (s *server) Notify(in *pb.SubscribeRequest, srv pb.NotificationService_NotifyServer) error {
+func (s *Server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_SubscribeServer) error {
 	ctx := srv.Context()
 	var wg sync.WaitGroup
 
-	log.Printf("connected: %s", in.Subid)
+	log.Printf("GRPC: user %s connected to channel %s", in.UserId, in.ChannelId)
 
-	eventChannel := make(chan nats.Msg)
+	// Pass the go channel into the NATS loop
+	go s.queue.Subscribe(in.ChannelId)
 
-	go subscribe(ctx, s.nats, in.Subid, &eventChannel)
+	// send a "connected" message to the client to tell the client it successfully connected
+	verifySubscription(srv, in)
 
-	// send a "connected" message to the client
-	queueName := fmt.Sprintf("events.%s", in.Subid)
-	connectResponse := *nats.NewMsg(queueName)
-	connectResponse.Data = []byte(`{"subid":"` + in.Subid + `", "sender": "server", "text":"connected"}`)
-	forwardEventToClient(connectResponse, srv)
+	pastMessage, err := s.cache.GetFrom(in.ChannelId, in.LastTs, "+inf")
+	if err != nil {
+		return err
+	}
 
+	for _, message := range pastMessage {
+		var notification pb.Notification
+		j := protojson.UnmarshalOptions{}
+		if err := j.Unmarshal([]byte(message), &notification); err != nil {
+			log.Printf("unmarshal error %v", err)
+			return err
+		}
+		if err := srv.Send(&notification); err != nil {
+			log.Printf("send error %v", err)
+			return err
+		}
+	}
+
+	// Receive messages from the NATS loop and forward them to the client
 	for {
 		select {
 		case <-ctx.Done():
-			log.Printf("disconnected %s", in.Subid)
+			log.Printf("disconnected %s", in.ChannelId)
 			return nil
 		default:
-			for event := range eventChannel {
+			for message := range *s.queue.Messages {
 				wg.Add(1)
-				go func(event nats.Msg) {
+				go func(message nats.Msg) {
 					defer wg.Done()
-					forwardEventToClient(event, srv)
-				}(event)
+					relay(message, srv)
+				}(message)
 			}
 		}
 		wg.Wait()
 	}
 }
 
-func forwardEventToClient(
-	event nats.Msg,
-	srv pb.NotificationService_NotifyServer,
-) {
+// Send receives a message from the client and publishes it to the NATS server
+func (s *Server) Send(ctx context.Context, in *pb.Notification) (*pb.SendResponse, error) {
+	log.Printf("GRPC: user: %s sent: %s to channel: %s", in.UserId, in.Text, in.ChannelId)
 
-	var data pb.Notification
-	if err := json.Unmarshal(event.Data, &data); err != nil {
+	// Override timstamp
+	in.Ts = fmt.Sprint(time.Now().UnixNano())
+
+	msg := nats.NewMsg(in.ChannelId)
+
+	payload, err := ProtoToJSON(in)
+	if err != nil {
+		return nil, err
+	}
+
+	msg.Data = payload
+
+	if err := s.cache.Set(in.ChannelId, string(payload)); err != nil {
+		return nil, err
+	}
+
+	if err := s.queue.Publish(in.ChannelId, payload); err != nil {
+		return nil, err
+	}
+
+	return &pb.SendResponse{Ok: true, Error: ""}, nil
+}
+
+func verifySubscription(srv pb.NotificationService_SubscribeServer, in *pb.SubscribeRequest) {
+	srv.Send(&pb.Notification{
+		ChannelId: in.ChannelId,
+		UserId:    "server",
+		Text:      "connected",
+		Ts:        "0",
+	})
+}
+
+// Send messages from NATS to the gRPC client
+func relay(message nats.Msg, srv pb.NotificationService_SubscribeServer) {
+
+	// Convert JSON message to Notification object
+	notification, err := JSONToProto(message.Data)
+	if err != nil {
 		log.Printf("unmarshal error %v", err)
 		return
 	}
 
-	n := pb.Notification{
-		Subid:  data.Subid,
-		Text:   data.Text,
-		Sender: data.Sender,
-	}
+	// Override the timestamp with the current time
+	notification.Ts = fmt.Sprint(time.Now().UnixNano())
+	log.Printf("NATS->GRPC: %s", string(notification.Ts))
 
-	resp := &pb.NotificationServiceNotifyResponse{Notifications: &n}
-	if err := srv.Send(resp); err != nil {
+	if err := srv.Send(notification); err != nil {
 		log.Printf("send error %v", err)
 		return
 	}
-	event.Ack()
-}
 
-func subscribe(ctx context.Context, url, subscriberId string, events *chan nats.Msg) error {
-	nc, err := nats.Connect(url)
-	if err != nil {
-		return err
-	}
-
-	js, err := nc.JetStream()
-
-	if err != nil {
-		return err
-	}
-
-	cfg := &nats.StreamConfig{
-		Name:      "EVENTS",
-		Retention: nats.WorkQueuePolicy,
-		Subjects:  []string{"events.>"},
-	}
-
-	js.AddStream(cfg)
-
-	subject := "events." + subscriberId
-	sub, err := js.PullSubscribe(subject, subscriberId, nats.BindStream(cfg.Name))
-	if err != nil {
-		panic(err)
-	}
-
-	for {
-		select {
-		case <-ctx.Done():
-			log.Printf("unsubscribing disconnected client: %s", subscriberId)
-			sub.Unsubscribe()
-			return nil
-
-		default:
-			msgs, err := sub.Fetch(1, nats.MaxWait(1*time.Second))
-			if err != nil {
-				continue
-			}
-			if len(msgs) == 0 {
-				continue
-			}
-			msg := msgs[0]
-			// the nats message is sent back to the gRPC handler via the events channel, and will be "Ack()"ed there
-			*events <- *msg
-		}
-	}
+	// Ack the NATS message so it's not sent again
+	message.Ack()
 }
