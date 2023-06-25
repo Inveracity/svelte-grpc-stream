@@ -1,33 +1,29 @@
 <script lang="ts">
+	import '../app.css';
+	import { beforeUpdate, afterUpdate } from 'svelte';
 	import { Subscribe, Unsubscribe, SendNotification } from '../grpc';
 	import { notifier } from '../store';
 	import { status } from '../store';
 	import { BarLoader } from 'svelte-loading-spinners';
 
-	import {
-		beforeUpdate,
-		afterUpdate
-	} from 'svelte';
-
-	let div: HTMLDivElement;
+	let eventDiv: HTMLDivElement;
 	let autoscroll = false;
 
 	beforeUpdate(() => {
-		if (div) {
-			const scrollableDistance = div.scrollHeight - div.offsetHeight;
-			autoscroll = div.scrollTop > scrollableDistance - 20;
+		if (eventDiv) {
+			const scrollableDistance = eventDiv.scrollHeight - eventDiv.offsetHeight;
+			autoscroll = eventDiv.scrollTop > scrollableDistance - 20;
 		}
 	});
 
 	afterUpdate(() => {
 		if (autoscroll) {
-			div.scrollTo(0, div.scrollHeight);
+			eventDiv.scrollTo(0, eventDiv.scrollHeight);
 		}
 	});
 
 	let userid = 'user1';
 	let channelid = "channel1";
-	let timestamp = "";
 </script>
 
 <div>
@@ -65,36 +61,30 @@
 		<button disabled={channelid === ''} on:click={() => SendNotification(channelid, userid,`who would've thought?`)}> who </button>
 		<button disabled={channelid === ''} on:click={() => SendNotification(channelid, userid,'not me!')}> not me </button>
 	</div>
+	<hr />
 
-	<div class="events" bind:this={div}>
-		<button style="float: right;" on:click={notifier.reset}> clear </button>
-		{#each $notifier as item}
-			<p>{item}</p>
-		{/each}
+	<div class="notifications">
+		<div>
+			<button on:click={notifier.reset}> clear </button>
+		</div>
+		<div class="events" bind:this={eventDiv}>
+			{#each $notifier as msg}
+			<p>{msg}</p>
+			{/each}
+		</div>
 	</div>
 </div>
 
 <style>
+	.notifications {
+		width: 80%;
+	}
 	.events {
-		border: 1px solid black;
-		height: 200px;
-		overflow: scroll;
+		width: auto;
+		height: 400px;
+		overflow-y: scroll;
 	}
-	div {
-		margin: 10px;
-	}
-	input {
-		padding: 5px;
-		margin: 10px;
-		width: 210px;
-	}
-	button {
-		padding: 5px;
-		margin: 10px;
-		width: 100px;
-	}
-	p {
-		margin: 10px;
-		font-family: 'Courier New', Courier, monospace;
+	.events::-webkit-scrollbar {
+		width: 0px !important; /*removes the scrollbar but still scrollable*/
 	}
 </style>

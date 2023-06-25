@@ -1,0 +1,43 @@
+body {
+    background-color: #191b1c;
+    color: #fff;
+}
+
+div {
+    margin: 10px;
+}
+
+p {
+    margin: 10px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+button {
+    background-color: #356dc2;
+    color: #fff;
+    border-style: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px;
+    width: 150px;
+    cursor: pointer
+}
+
+button:hover {
+    background-color: #1e4a7e;
+}
+
+input {
+    background-color: #fff;
+    color: #000;
+    border-style: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px;
+    width: 210px;
+}
+
+input:disabled {
+    cursor: default;
+    background-color: #444444;
+}
