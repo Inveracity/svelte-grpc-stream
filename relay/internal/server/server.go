@@ -77,13 +77,16 @@ func (s *Server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_S
 	}
 }
 
-// Send receives a request from the client and publishes it to the NATS server
-func (s *Server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse, error) {
+// Send receives a message from the client and publishes it to the NATS server
+func (s *Server) Send(ctx context.Context, in *pb.Notification) (*pb.SendResponse, error) {
 	log.Printf("GRPC: user: %s sent: %s to channel: %s", in.UserId, in.Text, in.ChannelId)
+
+	// Override timstamp
+	in.Ts = fmt.Sprint(time.Now().UnixNano())
 
 	msg := nats.NewMsg(in.ChannelId)
 
-	payload, err := protoToJSON(in)
+	payload, err := ProtoToJSON(in)
 	if err != nil {
 		return nil, err
 	}
@@ -102,33 +105,33 @@ func (s *Server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse
 }
 
 func verifySubscription(srv pb.NotificationService_SubscribeServer, in *pb.SubscribeRequest) {
-	srv.Send(&pb.Notification{ChannelId: in.ChannelId, UserId: "server", Text: "connected"})
-}
-
-func protoToJSON(in *pb.SendRequest) ([]byte, error) {
-	j := protojson.MarshalOptions{UseProtoNames: true}
-	return j.Marshal(in)
+	srv.Send(&pb.Notification{
+		ChannelId: in.ChannelId,
+		UserId:    "server",
+		Text:      "connected",
+		Ts:        "0",
+	})
 }
 
 // Send messages from NATS to the gRPC client
-func relay(event nats.Msg, srv pb.NotificationService_SubscribeServer) {
-	var notification pb.Notification
+func relay(message nats.Msg, srv pb.NotificationService_SubscribeServer) {
 
-	log.Printf("forwarding event from nats to grpc: %s", string(event.Data))
-	// unmarshal the nats message into a protobuf message
-	j := protojson.UnmarshalOptions{}
-	if err := j.Unmarshal(event.Data, &notification); err != nil {
+	// Convert JSON message to Notification object
+	notification, err := JSONToProto(message.Data)
+	if err != nil {
 		log.Printf("unmarshal error %v", err)
 		return
 	}
 
+	// Override the timestamp with the current time
 	notification.Ts = fmt.Sprint(time.Now().UnixNano())
+	log.Printf("NATS->GRPC: %s", string(notification.Ts))
 
-	if err := srv.Send(&notification); err != nil {
+	if err := srv.Send(notification); err != nil {
 		log.Printf("send error %v", err)
 		return
 	}
 
 	// Ack the NATS message so it's not sent again
-	event.Ack()
+	message.Ack()
 }

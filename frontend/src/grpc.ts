@@ -1,5 +1,6 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 import { NotificationServiceClient } from './proto/notifications/v1/notifications.client';
+import type { Notification } from './proto/notifications/v1/notifications';
 import { notifier } from './store';
 import { status } from './store';
 import { persisted } from 'svelte-local-storage-store'
@@ -44,9 +45,11 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
 	try {
 		for await (const msg of sub.responses) {
 			status.connected();
-			const message = `${msg.channelId}/${msg.userId}: ${msg.text}`;
+			const message = `${msg.ts} ${msg.channelId}/${msg.userId}: ${msg.text}`;
 			notifier.write(message);
-			notifications_cache.set({lastTs: msg.ts})
+			if (msg.ts !== "0") {
+				notifications_cache.set({lastTs: msg.ts})
+			}
 		}
 	} catch (e: any) {
 			console.log("Stream closed");
@@ -63,10 +66,11 @@ export const Unsubscribe = async () => {
 export const SendNotification = (channelId: string, userId: string, text: string) => {
 	const client = new NotificationServiceClient(transport);
 
-	const request = {
+	const request: Notification = {
 			channelId: channelId,
 			userId: userId,
 			text: text,
+			ts: "0", // The server will set the timestamp
 	};
 
 	client.send(request).then((response) => {

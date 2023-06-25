@@ -5,7 +5,6 @@ import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { NotificationService } from "./notifications";
 import type { SendResponse } from "./notifications";
-import type { SendRequest } from "./notifications";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { Notification } from "./notifications";
@@ -21,9 +20,9 @@ export interface INotificationServiceClient {
      */
     subscribe(input: SubscribeRequest, options?: RpcOptions): ServerStreamingCall<SubscribeRequest, Notification>;
     /**
-     * @generated from protobuf rpc: Send(proto.notifications.v1.SendRequest) returns (proto.notifications.v1.SendResponse);
+     * @generated from protobuf rpc: Send(proto.notifications.v1.Notification) returns (proto.notifications.v1.SendResponse);
      */
-    send(input: SendRequest, options?: RpcOptions): UnaryCall<SendRequest, SendResponse>;
+    send(input: Notification, options?: RpcOptions): UnaryCall<Notification, SendResponse>;
 }
 /**
  * @generated from protobuf service proto.notifications.v1.NotificationService
@@ -42,10 +41,10 @@ export class NotificationServiceClient implements INotificationServiceClient, Se
         return stackIntercept<SubscribeRequest, Notification>("serverStreaming", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: Send(proto.notifications.v1.SendRequest) returns (proto.notifications.v1.SendResponse);
+     * @generated from protobuf rpc: Send(proto.notifications.v1.Notification) returns (proto.notifications.v1.SendResponse);
      */
-    send(input: SendRequest, options?: RpcOptions): UnaryCall<SendRequest, SendResponse> {
+    send(input: Notification, options?: RpcOptions): UnaryCall<Notification, SendResponse> {
         const method = this.methods[1], opt = this._transport.mergeOptions(options);
-        return stackIntercept<SendRequest, SendResponse>("unary", this._transport, method, opt, input);
+        return stackIntercept<Notification, SendResponse>("unary", this._transport, method, opt, input);
     }
 }

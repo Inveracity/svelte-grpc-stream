@@ -6,7 +6,7 @@ option go_package = "internal/gen/notifications";
 
 service NotificationService {
   rpc Subscribe(SubscribeRequest) returns (stream Notification) {}
-  rpc Send(SendRequest) returns (SendResponse) {}
+  rpc Send(Notification) returns (SendResponse) {}
 }
 
 //// RECEIVE NOTIFICATIONS ////
@@ -24,15 +24,6 @@ message Notification {
   string user_id = 2;
   string text = 3;
   string ts = 4; // timestamp
-}
-
-//// SEND NOTIFICATIONS ////
-
-// Streamed notification object
-message SendRequest {
-  string channel_id = 1;
-  string user_id = 2;
-  string text = 3;
 }
 
 // The response payload after sending a notification

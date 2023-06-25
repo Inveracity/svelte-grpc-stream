@@ -28,7 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotificationServiceClient interface {
 	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (NotificationService_SubscribeClient, error)
-	Send(ctx context.Context, in *SendRequest, opts ...grpc.CallOption) (*SendResponse, error)
+	Send(ctx context.Context, in *Notification, opts ...grpc.CallOption) (*SendResponse, error)
 }
 
 type notificationServiceClient struct {
@@ -71,7 +71,7 @@ func (x *notificationServiceSubscribeClient) Recv() (*Notification, error) {
 	return m, nil
 }
 
-func (c *notificationServiceClient) Send(ctx context.Context, in *SendRequest, opts ...grpc.CallOption) (*SendResponse, error) {
+func (c *notificationServiceClient) Send(ctx context.Context, in *Notification, opts ...grpc.CallOption) (*SendResponse, error) {
 	out := new(SendResponse)
 	err := c.cc.Invoke(ctx, NotificationService_Send_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -85,7 +85,7 @@ func (c *notificationServiceClient) Send(ctx context.Context, in *SendRequest, o
 // for forward compatibility
 type NotificationServiceServer interface {
 	Subscribe(*SubscribeRequest, NotificationService_SubscribeServer) error
-	Send(context.Context, *SendRequest) (*SendResponse, error)
+	Send(context.Context, *Notification) (*SendResponse, error)
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -96,7 +96,7 @@ type UnimplementedNotificationServiceServer struct {
 func (UnimplementedNotificationServiceServer) Subscribe(*SubscribeRequest, NotificationService_SubscribeServer) error {
 	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
-func (UnimplementedNotificationServiceServer) Send(context.Context, *SendRequest) (*SendResponse, error) {
+func (UnimplementedNotificationServiceServer) Send(context.Context, *Notification) (*SendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
@@ -134,7 +134,7 @@ func (x *notificationServiceSubscribeServer) Send(m *Notification) error {
 }
 
 func _NotificationService_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendRequest)
+	in := new(Notification)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func _NotificationService_Send_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: NotificationService_Send_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotificationServiceServer).Send(ctx, req.(*SendRequest))
+		return srv.(NotificationServiceServer).Send(ctx, req.(*Notification))
 	}
 	return interceptor(ctx, in, info, handler)
 }
