@@ -1,13 +1,14 @@
 {
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode",
-    "editor.tabSize": 2,
   },
-  "[typescript]": {
-    "editor.tabSize": 2
-  },
+
   "[python]": {
     "editor.tabSize": 4,
-    "editor.wordBasedSuggestions": false
+    "editor.wordBasedSuggestions": false,
   }
 }

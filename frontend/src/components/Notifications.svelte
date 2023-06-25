@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { beforeUpdate, afterUpdate } from 'svelte';
+	import { beforeUpdate, afterUpdate } from 'svelte';
 	import { notifier } from '../store';
 	import Messages from './Messages.svelte';
-    let eventDiv: HTMLDivElement;
+
+	let eventDiv: HTMLDivElement;
 	let autoscroll = false;
 
 	beforeUpdate(() => {
@@ -17,17 +18,17 @@
 			eventDiv.scrollTo(0, eventDiv.scrollHeight);
 		}
 	});
-
 </script>
+
 <div class="notifications">
-    <div>
-        <button on:click={notifier.reset}> clear </button>
-    </div>
-    <div class="events" bind:this={eventDiv}>
-        {#each $notifier as msg}
-        <Messages msg={msg} />
-        {/each}
-    </div>
+	<div>
+		<button on:click={notifier.reset}> clear </button>
+	</div>
+	<div class="events" bind:this={eventDiv}>
+		{#each $notifier as msg}
+			<Messages {msg} />
+		{/each}
+	</div>
 </div>
 
 <style>
