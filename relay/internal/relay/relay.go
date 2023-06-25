@@ -40,7 +40,7 @@ func NewRelay(ctx context.Context, port int, natsURL string, redisURL string) *R
 	messages := make(chan nats.Msg, 64)
 	queue := queue.NewQueue(ctx, natsConn, &messages)
 
-	grpcServer := server.NewServer(cache, queue)
+	grpcServer := server.NewServer(ctx, cache, queue)
 	return &Relay{
 		port:   port,
 		server: grpcServer,

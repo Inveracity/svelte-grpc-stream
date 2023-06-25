@@ -17,11 +17,12 @@
 
 <style>
 	.card {
-		/* Add shadows to create the "card" effect */
 		box-shadow: 0 4px 8px 0 rgba(230, 230, 230, 0.042);
 		transition: 0.3s;
+		background-color: rgb(26, 32, 41);
 		margin: 10px;
 		padding: 10px;
+		border-radius: 10px;
 	}
 
 	.header {
@@ -30,15 +31,11 @@
 		align-items: stretch;
 	}
 
-	/* On mouse-over, add a deeper shadow */
 	.card:hover {
 		box-shadow: 0 8px 16px 0 rgba(222, 222, 222, 0.2);
 	}
 
-	/* Add some padding inside the card container */
 	.container {
-		padding: 2px 16px 2px 16px;
-		margin: 10px 10px 10px 10px;
-		background-color: rgb(40, 56, 79);
+		padding: 0px 5px 0px 5px;
 	}
 </style>

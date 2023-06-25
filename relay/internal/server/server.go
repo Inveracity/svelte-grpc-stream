@@ -19,17 +19,18 @@ type Server struct {
 	pb.UnimplementedNotificationServiceServer
 	cache *cache.Cache
 	queue *queue.Queue
+	ctx   context.Context
 }
 
-func NewServer(cache *cache.Cache, queue *queue.Queue) *Server {
+func NewServer(ctx context.Context, cache *cache.Cache, queue *queue.Queue) *Server {
 	return &Server{
+		ctx:   ctx,
 		cache: cache,
 		queue: queue,
 	}
 }
 
 func (s *Server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_SubscribeServer) error {
-	ctx := srv.Context()
 	var wg sync.WaitGroup
 
 	log.Printf("GRPC: user %s connected to channel %s", in.UserId, in.ChannelId)
@@ -61,7 +62,7 @@ func (s *Server) Subscribe(in *pb.SubscribeRequest, srv pb.NotificationService_S
 	// Receive messages from the NATS loop and forward them to the client
 	for {
 		select {
-		case <-ctx.Done():
+		case <-s.ctx.Done():
 			log.Printf("disconnected %s", in.ChannelId)
 			return nil
 		default:

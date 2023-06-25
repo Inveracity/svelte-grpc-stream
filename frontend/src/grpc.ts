@@ -68,11 +68,14 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
     console.log("Stream closed");
   }
 
+  await sub.headers;
+  await sub.trailers;
   status.disconnected();
 };
 
 // The client can actively unsubscribe letting the server know to close the stream
 export const Unsubscribe = async () => {
+  console.log("Unsubscribe")
   controller.abort();
 };
 
@@ -117,7 +120,7 @@ const filtered = (msg: Notification, lastTs: string): boolean => {
 const timestampToDate = (timestamp: string): string => {
   try {
     const nano = parseInt(timestamp)
-    return DateTime.fromMillis(nano / 1000000).toFormat("HH:mm:ss")
+    return DateTime.fromMillis(nano / 1000000).toFormat("ff")
   } catch (e) {
     console.log(e);
     return timestamp;
