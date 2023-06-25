@@ -7,11 +7,11 @@ readme.md
 docker
 .vscode
 
-
 # frontend
 frontend/node_modules
+frontend/.svelte-kit
+frontend/build
 .eslintignore
 .eslintrc.cjs
 .prettierrc
 .pretieriignore
-
