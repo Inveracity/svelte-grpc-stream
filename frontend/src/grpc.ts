@@ -5,6 +5,7 @@ import { notifier } from './store';
 import { status } from './store';
 import { persisted } from 'svelte-local-storage-store'
 import { get } from 'svelte/store'
+import { DateTime } from 'luxon';
 
 export const notifications_cache = persisted(
 	'notifications', // storage
@@ -44,12 +45,18 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
 	// Listen for messages from the server
 	try {
 		for await (const msg of sub.responses) {
-			status.connected();
-			const message = `${msg.ts} ${msg.channelId}/${msg.userId}: ${msg.text}`;
-			notifier.write(message);
-			if (msg.ts !== "0") {
-				notifications_cache.set({lastTs: msg.ts})
+			// Filter out messages that should not be written to the UI
+			if (filtered(msg, lastTs)) {
+				continue;
 			}
+
+			// Format timestamp
+			const ts = timestampToDate(msg.ts)
+			const message = `${ts} ${msg.channelId}/${msg.userId}: ${msg.text}`;
+
+			notifier.write(message);
+			notifications_cache.set({lastTs: msg.ts})
+
 		}
 	} catch (e: any) {
 			console.log("Stream closed");
@@ -79,4 +86,34 @@ export const SendNotification = (channelId: string, userId: string, text: string
 	}).catch((e) => {
 		console.log(e);
 	});
+}
+
+const filtered = (msg: Notification, lastTs: string): boolean => {
+			// Do not write server messages to the UI
+			if (msg.userId === "server" && msg.text === "connected") {
+				status.connected();
+				return true;
+			}
+
+			// Do not write messages with timestamp 0 to the UI
+			if (msg.ts === "0") {
+				return true;
+			}
+
+			// Deduplicate messages with the same timestamp
+			if (msg.ts === lastTs) {
+				return true;
+			}
+
+			return false
+}
+
+const timestampToDate = (timestamp: string): string => {
+	try {
+		const nano = parseInt(timestamp)
+		return DateTime.fromMillis(nano / 1000000).toFormat("HH:mm:ss")
+	} catch (e) {
+		console.log(e);
+		return timestamp;
+	}
 }

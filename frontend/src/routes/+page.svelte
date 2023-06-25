@@ -3,6 +3,28 @@
 	import { notifier } from '../store';
 	import { status } from '../store';
 	import { BarLoader } from 'svelte-loading-spinners';
+
+	import {
+		beforeUpdate,
+		afterUpdate
+	} from 'svelte';
+
+	let div: HTMLDivElement;
+	let autoscroll = false;
+
+	beforeUpdate(() => {
+		if (div) {
+			const scrollableDistance = div.scrollHeight - div.offsetHeight;
+			autoscroll = div.scrollTop > scrollableDistance - 20;
+		}
+	});
+
+	afterUpdate(() => {
+		if (autoscroll) {
+			div.scrollTo(0, div.scrollHeight);
+		}
+	});
+
 	let userid = 'user1';
 	let channelid = "channel1";
 	let timestamp = "";
@@ -44,7 +66,7 @@
 		<button disabled={channelid === ''} on:click={() => SendNotification(channelid, userid,'not me!')}> not me </button>
 	</div>
 
-	<div class="events">
+	<div class="events" bind:this={div}>
 		<button style="float: right;" on:click={notifier.reset}> clear </button>
 		{#each $notifier as item}
 			<p>{item}</p>
