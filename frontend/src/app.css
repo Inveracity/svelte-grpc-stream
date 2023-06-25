@@ -7,6 +7,16 @@ div {
     margin: 10px;
 }
 
+nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #538edc4c;
+    padding: 10px;
+    border-radius: 5px;
+}
+
 p {
     margin: 10px;
     font-family: 'Courier New', Courier, monospace;

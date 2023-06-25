@@ -27,7 +27,6 @@
 </script>
 
 <div>
-	<h1>GRPC Stream</h1>
 
 	<div>
 		<p>status: {$status ? $status : 'disconnected'}</p>
