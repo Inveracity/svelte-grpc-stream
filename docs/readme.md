@@ -21,22 +21,31 @@ autonumber
 actor Alice
 participant Relay
 participant Nats
+participant Redis
 participant API
 actor Bob
 
-Alice ->>+ Relay: subscribe to "events.Alice"
-Relay ->>- Nats: Create queue group "events" subject "Alice"
-Nats -> Nats: "events.NAME" queue created
 
-Bob ->>+ API: POST /send-notification to "events.Alice"
-API ->>- Nats: Publish msg to "events.Alice"
+Bob   ->>+ API   : Sends msg to "channel1"
+API   ->>  Redis : Cache message in Redis
+API   ->>- Nats  : Publish msg to "channel1"
+Note  over Nats  : Since there are no subscribers the msg is dropped
+Alice ->>+ Relay : Subscribe to "channel1"
+Relay ->>+ Redis : Get "channel1" history from last timestamp
+Redis ->>- Relay : Bob's message
+Relay ->>  Alice : Bob's message arrives at Alice
+Relay ->>- Nats  : Subscribe to "channel1"
+Relay ->>  Alice : Open server stream
 
-loop Streaming
-    Nats -->+ Relay: NATS stream
-    Note over Relay: Relay convert NATS msg to gRPC
-    Relay --> Alice: gRPC server stream
-
-    Relay ->>- Nats: Ack msg
+loop Server Stream
+    Nats  -->+ Relay : Subscribe
+    Bob   ->>  API   : New message
+    API   ->>  Redis : Cache
+    API   ->>  Nats  : Publish
+    Nats  -->> Relay : Msg
+    Note  over Relay : Nats -> gRPC
+    Relay -->> Alice : gRPC server stream
+    Relay ->>- Nats  : Ack msg
 end
 ```
 
@@ -45,9 +54,10 @@ end
 The message payload has the following structure
 
 ```yaml
-subid: the NATS queue ID in the form of `group.subject`
+channelid: the NATS queue ID is the same as a channel
+userid: where the message came from
 text: the actual message
-sender: where the message came from
+ts: timestamp in Unix Nano seconds
 ```
 
 The relay creates a hardcoded group called `events` and each user that presses the subscribe button is the `subject` on that group.
