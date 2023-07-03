@@ -1,21 +1,35 @@
-<script lang="ts">
+<script>
+	import '../app.css';
+	import Channels from '../components/Channels.svelte';
+	import Input from '../components/Input.svelte';
+	import History from '../components/History.svelte';
+	import Circle from '../components/Circle.svelte';
 	import Controls from '../components/Controls.svelte';
-	import Notifications from '../components/Notifications.svelte';
+	import { status } from '../store';
+	import { BarLoader } from 'svelte-loading-spinners';
 </script>
 
-<div class="layout">
-	<div style="width: 60%">
-		<Controls />
+{#if $status === 'pending'}
+	<div class="loader">
+		<BarLoader color="#fff" />
 	</div>
-	<hr />
-	<div style="width: 40%">
-		<Notifications />
+{:else if $status === 'connected'}
+	<Channels />
+
+	<div class="box">
+		<History />
+		<Circle color={$status === 'connected' ? 'green' : 'grey'} />
+		<Input />
 	</div>
-</div>
+{:else}
+	<Controls />
+{/if}
 
 <style>
-	.layout {
+	.box {
+		flex-grow: 1;
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
+		min-height: 0;
 	}
 </style>

@@ -1,59 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter&family=Montserrat&family=Roboto+Mono&display=swap');
+html {
+  height: 100%;
+  font-family: monospace;
+  color: #d2d2d2;
+  background-color: #262626;
+}
 
 body {
-  background-color: #191b1c;
-  color: #fff;
-  font-family: 'Montserrat', Courier;
-}
-
-div {
-  margin: 10px;
-}
-
-hr {
-  border-color: #ffffff23;
-}
-
-nav {
+  height: 100vh;
+  margin: 0;
   display: flex;
   flex-direction: row;
-  justify-content: start;
-  align-items: center;
-  border-radius: 5px;
 }
 
-p {
-  margin: 10px;
-  font-family: 'montserrat', Courier;
-}
-
-button {
-  background-color: #356dc2;
-  color: #fff;
-  border-style: none;
-  border-radius: 5px;
-  padding: 5px;
-  margin: 10px;
-  width: 150px;
-  cursor: pointer
-}
-
-button:hover {
-  background-color: #1e4a7e;
-}
-
-input {
-  background-color: #fff;
-  font-family: 'Roboto Mono', monospace;
-  color: #000;
-  border-style: none;
-  border-radius: 5px;
-  padding: 5px;
-  margin: 10px;
-  width: 210px;
-}
-
-input:disabled {
-  cursor: default;
-  background-color: #444444;
+a:-webkit-any-link {
+  color: #dc9f6d;
+  cursor: pointer;
+  text-decoration: none;
 }

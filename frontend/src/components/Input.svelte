@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { messages } from '../../store';
-	import type { IMessage } from '../../types';
-  import { channel } from '../../store';
+	import { channel, username } from '../store';
+	import { SendMessage } from '../grpc';
+	import type { OutgoingMessage } from '../types';
 	let message = '';
 
 	const onKeyPress = (e: any) => {
 		if (e.charCode === 13 && !e.shiftKey) {
 			e.preventDefault();
-			var msg: IMessage = { msg: message, channel: $channel };
-			messages.add(msg);
+			let msg: OutgoingMessage = { channelId: $channel, userId: $username, text: message };
+			SendMessage(msg);
 			message = '';
 		}
 	};

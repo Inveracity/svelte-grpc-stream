@@ -2,7 +2,6 @@
 	import { channel } from '../store';
 
 	let channels = ['general', 'spam'];
-	let selectedChannel = 'general';
 
 	const selectChannel = (e: any, channelName: string) => {
 		e.preventDefault();
@@ -14,7 +13,8 @@
 <div class="sidebar">
 	<div class="channelItems">
 		{#each channels as chan}
-			<button class="button" on:click={(e) => selectChannel(e, chan)}>
+			<!-- disabled is set to true when channel is selected -->
+			<button class="button" disabled={chan === $channel} on:click={(e) => selectChannel(e, chan)}>
 				<p>{chan}</p>
 			</button>
 		{/each}
@@ -40,5 +40,8 @@
 	}
 	button:hover {
 		background-color: #a5a5a5;
+	}
+	button:disabled {
+		background-color: #636363;
 	}
 </style>

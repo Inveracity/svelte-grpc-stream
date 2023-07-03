@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate } from 'svelte';
-	import { notifier } from '../store';
-	import Messages from './Messages.svelte';
+	import { messages, channel } from '../store';
 
 	let eventDiv: HTMLDivElement;
 	let autoscroll = false;
@@ -20,23 +19,24 @@
 	});
 </script>
 
-<div class="notifications">
-	<div>
-		<button on:click={notifier.reset}> clear </button>
-	</div>
-	<div class="events" bind:this={eventDiv}>
-		{#each $notifier as msg}
-			<Messages {msg} />
-		{/each}
-	</div>
+<div class="content" bind:this={eventDiv}>
+	{#each $messages as msg}
+		{#if msg.channel === $channel}
+			<p class="chatline">
+				{msg.user}: {msg.message}
+			</p>
+		{/if}
+	{/each}
 </div>
 
 <style>
-	.events {
-		height: 400px;
+	.content {
+		flex: 1;
+		padding: 10px;
 		overflow-y: scroll;
 	}
-	.events::-webkit-scrollbar {
-		width: 0px !important; /*removes the scrollbar but still scrollable*/
+	.chatline {
+		padding: 0px;
+		white-space: pre-line;
 	}
 </style>
