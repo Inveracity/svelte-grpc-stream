@@ -4,3 +4,9 @@ export interface Message {
   channel: string;
   user: string;
 }
+
+export interface OutgoingMessage {
+  channelId: string;
+  userId: string;
+  text: string;
+}

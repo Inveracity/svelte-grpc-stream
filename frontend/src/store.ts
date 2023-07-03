@@ -1,24 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Message } from './types';
 
-const createNotifier = () => {
-  const { subscribe, set, update } = writable<Message[]>([]);
-
-  return {
-    subscribe,
-    write: (item: Message | undefined) =>
-      update((notifs) => {
-        if (item) {
-          notifs.push(item);
-        }
-        return notifs;
-      }),
-    reset: () => set([])
-  };
-};
-
-export const notifier = createNotifier();
-
 function createStatus() {
   const { subscribe, set } = writable('');
 
@@ -32,3 +14,37 @@ function createStatus() {
 }
 
 export const status = createStatus();
+
+function createMessages() {
+  const { subscribe, set, update } = writable<Array<Message>>([]);
+
+  return {
+    subscribe,
+    add: (msg: Message) => update(n => [...n, msg]),
+    reset: () => set([]),
+  };
+}
+
+export const messages = createMessages();
+
+function createChannelSelector() {
+  const { subscribe, update } = writable<string>('general');
+
+  return {
+    subscribe,
+    set: (channel: string) => update(_ => channel),
+  };
+}
+
+export const channel = createChannelSelector();
+
+function createUsername() {
+  const { subscribe, update } = writable<string>('');
+
+  return {
+    subscribe,
+    set: (channel: string) => update(_ => channel),
+  };
+}
+
+export const username = createUsername();

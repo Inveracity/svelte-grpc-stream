@@ -1,15 +1,14 @@
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
-import { NotificationServiceClient } from './proto/notifications/v1/notifications.client';
-import type { Notification } from './proto/notifications/v1/notifications';
-import { notifier } from './store';
-import { status } from './store';
+import { ChatServiceClient } from './proto/chat/v1/chat.client';
+import type { ChatMessage } from './proto/chat/v1/chat';
+import { status, messages } from './store';
 import { persisted } from 'svelte-local-storage-store'
 import { get } from 'svelte/store'
 import { DateTime } from 'luxon';
-import type { Message } from './types';
+import type { Message, OutgoingMessage } from './types';
 
-export const notifications_cache = persisted(
-  'notifications', // storage
+export const chat_cache = persisted(
+  'chatmessages', // storage
   { lastTs: '0' }, // default value
   { storage: 'session' } // options
 )
@@ -20,7 +19,7 @@ const transport = new GrpcWebFetchTransport({
 
 let controller = new AbortController();
 
-export const Subscribe = async (channelId: string, userId: string, timestamp: string) => {
+export const Connect = async (serverId: string, userId: string, timestamp: string) => {
   // If the client disconnected, the abort controller is no longer valid and a new one must be created
   if (controller.signal.aborted) {
     controller = new AbortController();
@@ -30,10 +29,14 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
   const opts = transport.mergeOptions({ abort: controller.signal });
 
   // Get the last timestamp from the cache
-  let lastTs = get(notifications_cache).lastTs
+  let lastTs = get(chat_cache).lastTs
 
   // Create a new subscription to the server
-  const sub = new NotificationServiceClient(transport).subscribe({ channelId, userId, lastTs }, opts);
+  const sub = new ChatServiceClient(transport).connect({
+    serverId: serverId,
+    userId: userId,
+    lastTs: timestamp
+  }, opts);
 
   // While the connection is attempting to open, let the UI show a pending state
   status.pending();
@@ -60,8 +63,8 @@ export const Subscribe = async (channelId: string, userId: string, timestamp: st
         user: msg.userId,
       }
 
-      notifier.write(message);
-      notifications_cache.set({ lastTs: msg.ts })
+      messages.add(message);
+      chat_cache.set({ lastTs: msg.ts })
 
     }
   } catch (e: any) {
@@ -79,13 +82,13 @@ export const Unsubscribe = async () => {
   controller.abort();
 };
 
-export const SendNotification = (channelId: string, userId: string, text: string) => {
-  const client = new NotificationServiceClient(transport);
+export const SendMessage = (msg: OutgoingMessage) => {
+  const client = new ChatServiceClient(transport);
 
-  const request: Notification = {
-    channelId: channelId,
-    userId: userId,
-    text: text,
+  const request: ChatMessage = {
+    channelId: msg.channelId,
+    userId: msg.userId,
+    text: msg.text,
     ts: "0", // The server will set the timestamp
   };
 
@@ -97,7 +100,7 @@ export const SendNotification = (channelId: string, userId: string, text: string
   });
 }
 
-const filtered = (msg: Notification, lastTs: string): boolean => {
+const filtered = (msg: ChatMessage, lastTs: string): boolean => {
   // Do not write server messages to the UI
   if (msg.userId === "server" && msg.text === "connected") {
     status.connected();

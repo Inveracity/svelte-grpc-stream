@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package proto.chat.v1;
+
+option go_package = "internal/gen/chat";
+
+service ChatService {
+  rpc Connect(ConnectRequest) returns (stream ChatMessage) {}
+  rpc Send(ChatMessage) returns (SendResponse) {}
+}
+
+// The request payload to subscribe to a server stream
+message ConnectRequest {
+  string server_id = 1;
+  string user_id = 2;
+  string last_ts = 3; // last timestamp received by the client
+}
+
+// Chat server stream after subscribing to a channel
+message ChatMessage {
+  string channel_id = 1;
+  string user_id = 2;
+  string text = 3;
+  string ts = 4; // timestamp
+}
+
+// The response payload after sending a notification
+message SendResponse {
+  bool ok = 1;
+  string error = 2;
+}
