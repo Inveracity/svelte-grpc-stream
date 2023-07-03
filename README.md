@@ -2,7 +2,7 @@
 
 :warning: work in progress :warning:
 
-Learning some svelte and trying to stream realtime updates to it from a gRPC server.
+Learning some Svelte by building a gRPC based chat system.
 
 ## Infrastructure
 
@@ -10,7 +10,6 @@ This project consists of 5 infrastructure components
 - Traefik: ingress controller and gRPC-Web proxy
 - NATS: for queueing notifications that need to be relayed
 - Redis: caches messages
-- ~~API (python): For putting notifications on the queue~~ temporarily not in use
 - Relay (golang): Picks up messages from the queue and forwards them to a gRPC stream to the frontend
 - Frontend (svelte & typecript): For sending notifications via the API and recieving notifications via the Relay.
 
@@ -22,7 +21,6 @@ This project consists of 5 infrastructure components
 
 - [node 20.3.0](nodejs.org) to run svelte app
 - [golang 1.20](go.dev) to run the golang server
-- [python 3.11.4](python.org) to run the python API
 - [buf 1.21.0](buf.build) to generate code from protobuffers
 - [docker 24.0.2](docker.com) to run services in docker compose
 
