@@ -7,7 +7,7 @@ import (
 	"net"
 
 	"github.com/inveracity/svelte-grpc-stream/internal/cache"
-	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/notifications/v1"
+	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/chat/v1"
 	"github.com/inveracity/svelte-grpc-stream/internal/queue"
 	"github.com/inveracity/svelte-grpc-stream/internal/server"
 
@@ -56,7 +56,7 @@ func (r *Relay) Run() error {
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterNotificationServiceServer(s, r.server)
+	pb.RegisterChatServiceServer(s, r.server)
 
 	log.Printf("GRPC: server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
