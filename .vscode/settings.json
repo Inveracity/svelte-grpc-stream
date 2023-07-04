@@ -2,13 +2,13 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "editor.formatOnSave": true,
-
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode",
   },
-
-  "[python]": {
-    "editor.tabSize": 4,
-    "editor.wordBasedSuggestions": false,
+  "[go]": {
+    "editor.snippetSuggestions": "top",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
   }
 }

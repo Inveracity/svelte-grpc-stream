@@ -1,8 +1,9 @@
 {
-    "recommendations": [
-        "svelte.svelte-vscode",
-        "bufbuild.vscode-buf",
-        "peterj.proto",
-        "bierner.markdown-mermaid"
-    ]
+  "recommendations": [
+    "bierner.markdown-mermaid",
+    "bufbuild.vscode-buf",
+    "golang.go",
+    "peterj.proto",
+    "svelte.svelte-vscode",
+  ]
 }
