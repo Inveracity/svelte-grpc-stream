@@ -1,10 +1,14 @@
+import { get } from 'svelte/store'
+
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
+import { persisted } from 'svelte-local-storage-store'
+import { DateTime } from 'luxon';
+
+import { messages } from './stores/messages';
+import { status } from './stores/status';
+
 import { ChatServiceClient } from './proto/chat/v1/chat.client';
 import type { ChatMessage } from './proto/chat/v1/chat';
-import { status, messages } from './store';
-import { persisted } from 'svelte-local-storage-store'
-import { get } from 'svelte/store'
-import { DateTime } from 'luxon';
 import type { Message, OutgoingMessage } from './types';
 
 export const chat_cache = persisted(
@@ -76,9 +80,9 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
   status.disconnected();
 };
 
-// The client can actively unsubscribe letting the server know to close the stream
-export const Unsubscribe = async () => {
-  console.log("Unsubscribe")
+// The client can actively Disconnect letting the server know to close the stream
+export const Disconnect = async () => {
+  console.log("Disconnect")
   controller.abort();
 };
 
@@ -123,7 +127,7 @@ const filtered = (msg: ChatMessage, lastTs: string): boolean => {
 const timestampToDate = (timestamp: string): string => {
   try {
     const nano = parseInt(timestamp)
-    return DateTime.fromMillis(nano / 1000000).toFormat("ff")
+    return DateTime.fromMillis(nano / 1000000).toFormat("yyyy-MM-dd HH:mm:ss")
   } catch (e) {
     console.log(e);
     return timestamp;

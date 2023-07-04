@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { channel, username } from '../store';
+	import { channel } from '../stores/channel';
+	import { username } from '../stores/username';
+	import { status } from '../stores/status';
 	import { SendMessage } from '../grpc';
 	import type { OutgoingMessage } from '../types';
 	let message = '';
@@ -7,15 +9,20 @@
 	const onKeyPress = (e: any) => {
 		if (e.charCode === 13 && !e.shiftKey) {
 			e.preventDefault();
-			let msg: OutgoingMessage = { channelId: $channel, userId: $username, text: message };
+			let msg: OutgoingMessage = {
+				channelId: $channel,
+				userId: $username,
+				text: message,
+			};
 			SendMessage(msg);
 			message = '';
 		}
 	};
+
 </script>
 
 <div class="userInput">
-	<textarea id="userinput" placeholder="Message" bind:value={message} on:keypress={onKeyPress} />
+	<textarea id="userinput" placeholder={$status === "connected" ? "Message" : "disconnected" } bind:value={message} on:keypress={onKeyPress} disabled={$status !== "connected"} />
 </div>
 
 <style>

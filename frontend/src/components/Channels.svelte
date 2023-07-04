@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { channel } from '../store';
+	import { channel } from '../stores/channel';
 
 	let channels = ['general', 'spam'];
 

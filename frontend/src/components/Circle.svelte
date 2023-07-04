@@ -2,18 +2,23 @@
 	export let color: string = 'red';
 </script>
 
-<div class="circle" id={color} />
+<div class="wrapper">
+	<div class="circle" id={color} />
+	<slot />
+</div>
 
 <style>
+	.wrapper {
+		display: flex;
+		align-items: center;
+	}
 	.circle {
 		-webkit-border-radius: 8px;
 		-moz-border-radius: 8px;
 		border-radius: 8px;
 		width: 8px;
 		height: 8px;
-		display: flex;
-		justify-content: center;
-		text-align: center;
+		margin: 10px;
 	}
 
 	#red {

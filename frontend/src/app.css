@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+
 html {
   height: 100%;
-  font-family: monospace;
+  font-family: 'Fira Code', monospace;
   color: #d2d2d2;
   background-color: #262626;
 }
@@ -10,10 +12,33 @@ body {
   margin: 0;
   display: flex;
   flex-direction: row;
+  max-height: 100vh;
 }
 
 a:-webkit-any-link {
   color: #dc9f6d;
   cursor: pointer;
   text-decoration: none;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.column {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.row {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
 }
