@@ -7,10 +7,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/nats-io/nats.go"
+
 	"github.com/inveracity/svelte-grpc-stream/internal/cache"
 	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/chat/v1"
 	"github.com/inveracity/svelte-grpc-stream/internal/queue"
-	"github.com/nats-io/nats.go"
 
 	"google.golang.org/protobuf/encoding/protojson"
 )

@@ -1,8 +1,9 @@
 package server
 
 import (
-	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/chat/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/chat/v1"
 )
 
 func ProtoToJSON(in *pb.ChatMessage) ([]byte, error) {
