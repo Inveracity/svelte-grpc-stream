@@ -8,15 +8,16 @@ import (
 )
 
 type Cache struct {
-	ctx   context.Context
 	redis *redis.Client
 }
 
-func NewCache(ctx context.Context, redis *redis.Client) *Cache {
-	return &Cache{ctx: ctx, redis: redis}
+func NewCache(redis *redis.Client) *Cache {
+
+	return &Cache{redis: redis}
 }
 
 func (c *Cache) Set(key string, value string) error {
+	ctx := context.Background()
 	z := redis.ZAddArgs{
 		Members: []redis.Z{
 			{
@@ -26,7 +27,7 @@ func (c *Cache) Set(key string, value string) error {
 		},
 	}
 
-	ret := c.redis.ZAddArgs(c.ctx, key, z)
+	ret := c.redis.ZAddArgs(ctx, key, z)
 
 	if ret.Err() != nil {
 		return ret.Err()
@@ -36,11 +37,10 @@ func (c *Cache) Set(key string, value string) error {
 }
 
 func (c *Cache) GetFrom(key, start, end string) ([]string, error) {
-	ret := c.redis.ZRangeByScore(c.ctx, key, &redis.ZRangeBy{
-		Min:    start,
-		Max:    end,
-		Offset: 0,
-		Count:  100,
+	ctx := context.Background()
+	ret := c.redis.ZRangeByScore(ctx, key, &redis.ZRangeBy{
+		Min: start,
+		Max: end,
 	})
 
 	if ret.Err() != nil {

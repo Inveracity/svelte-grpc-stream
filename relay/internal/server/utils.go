@@ -1,6 +1,8 @@
 package server
 
 import (
+	"math/rand"
+
 	"google.golang.org/protobuf/encoding/protojson"
 
 	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/chat/v1"
@@ -18,4 +20,14 @@ func JSONToProto(in []byte) (*pb.ChatMessage, error) {
 		return nil, err
 	}
 	return &chatMsg, nil
+}
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func RandStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }

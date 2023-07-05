@@ -1,51 +1,38 @@
 package relay
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
+	"time"
 
 	"github.com/inveracity/svelte-grpc-stream/internal/cache"
 	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/chat/v1"
-	"github.com/inveracity/svelte-grpc-stream/internal/queue"
 	"github.com/inveracity/svelte-grpc-stream/internal/server"
 
-	"github.com/nats-io/nats.go"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 )
 
 type Relay struct {
-	ctx    context.Context
 	server *server.Server
-	nats   *nats.Conn
 	port   int
 }
 
-func NewRelay(ctx context.Context, port int, natsURL string, redisURL string) *Relay {
-	natsConn, err := nats.Connect(natsURL)
-	if err != nil {
-		panic(err)
-	}
-
+func NewRelay(port int, natsURL string, redisURL string) *Relay {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     redisURL,
 		Password: "",
 		DB:       0,
 	})
 
-	cache := cache.NewCache(ctx, redisClient)
+	cache := cache.NewCache(redisClient)
 
-	messages := make(chan nats.Msg, 64)
-	queue := queue.NewQueue(ctx, natsConn, &messages)
-
-	grpcServer := server.NewServer(ctx, cache, queue)
+	grpcServer := server.NewServer(natsURL, cache)
 	return &Relay{
 		port:   port,
 		server: grpcServer,
-		nats:   natsConn,
-		ctx:    ctx,
 	}
 }
 
@@ -55,7 +42,16 @@ func (r *Relay) Run() error {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
+			MinTime:             time.Duration(1 * time.Second),
+			PermitWithoutStream: true, // Allow pings even when there are no active streams
+		}),
+		grpc.KeepaliveParams(keepalive.ServerParameters{
+			Time:    time.Duration(2 * time.Hour),
+			Timeout: time.Duration(20 * time.Second),
+		}),
+	)
 	pb.RegisterChatServiceServer(s, r.server)
 
 	log.Printf("GRPC: server listening at %v", lis.Addr())
