@@ -1,7 +1,6 @@
 package relay
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -17,13 +16,12 @@ import (
 )
 
 type Relay struct {
-	ctx    context.Context
 	server *server.Server
 	nats   *nats.Conn
 	port   int
 }
 
-func NewRelay(ctx context.Context, port int, natsURL string, redisURL string) *Relay {
+func NewRelay(port int, natsURL string, redisURL string) *Relay {
 	natsConn, err := nats.Connect(natsURL)
 	if err != nil {
 		panic(err)
@@ -35,17 +33,16 @@ func NewRelay(ctx context.Context, port int, natsURL string, redisURL string) *R
 		DB:       0,
 	})
 
-	cache := cache.NewCache(ctx, redisClient)
+	cache := cache.NewCache(redisClient)
 
 	messages := make(chan nats.Msg, 64)
-	queue := queue.NewQueue(ctx, natsConn, &messages)
+	queue := queue.NewQueue(natsConn, &messages)
 
-	grpcServer := server.NewServer(ctx, cache, queue)
+	grpcServer := server.NewServer(cache, queue)
 	return &Relay{
 		port:   port,
 		server: grpcServer,
 		nats:   natsConn,
-		ctx:    ctx,
 	}
 }
 

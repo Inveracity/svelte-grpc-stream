@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 
 	"github.com/inveracity/svelte-grpc-stream/internal/relay"
@@ -15,8 +14,7 @@ var (
 
 func main() {
 	flag.Parse()
-	ctx := context.Background()
-	relay := relay.NewRelay(ctx, *port, *nats, *redis)
+	relay := relay.NewRelay(*port, *nats, *redis)
 	err := relay.Run()
 	if err != nil {
 		panic(err)

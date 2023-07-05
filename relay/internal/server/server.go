@@ -20,62 +20,49 @@ type Server struct {
 	pb.UnimplementedChatServiceServer
 	cache *cache.Cache
 	queue *queue.Queue
-	ctx   context.Context
 }
 
-func NewServer(ctx context.Context, cache *cache.Cache, queue *queue.Queue) *Server {
+func NewServer(cache *cache.Cache, queue *queue.Queue) *Server {
 	return &Server{
-		ctx:   ctx,
 		cache: cache,
 		queue: queue,
 	}
 }
 
 func (s *Server) Connect(in *pb.ConnectRequest, srv pb.ChatService_ConnectServer) error {
+	log.Printf("GRPC: user %s connected to server %s", in.UserId, in.ServerId)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	var wg sync.WaitGroup
 
-	log.Printf("GRPC: user %s connected to server %s", in.UserId, in.ServerId)
-
 	// Pass the go channel into the NATS loop
-	go s.queue.Subscribe(in.ServerId)
+	wg.Add(1)
+	go s.queue.Subscribe(ctx, in.ServerId)
 
 	// send a "connected" message to the client to tell the client it successfully connected
-	verifyConnection(srv, in)
+	s.verifyConnection(srv, in)
 
-	pastMessage, err := s.cache.GetFrom(in.ServerId, in.LastTs, "+inf")
-	if err != nil {
+	// getPastMessages
+	if err := s.getPastMessages(srv, in); err != nil {
+		log.Printf("error getting past messages: %v", err)
 		return err
-	}
-
-	for _, message := range pastMessage {
-		var chatmsg pb.ChatMessage
-		j := protojson.UnmarshalOptions{}
-		if err := j.Unmarshal([]byte(message), &chatmsg); err != nil {
-			log.Printf("unmarshal error %v", err)
-			return err
-		}
-		if err := srv.Send(&chatmsg); err != nil {
-			log.Printf("send error %v", err)
-			return err
-		}
 	}
 
 	// Receive messages from the NATS loop and forward them to the client
 	for {
 		select {
-		case <-s.ctx.Done():
-			log.Printf("disconnected %s", in.ServerId)
+		case <-srv.Context().Done():
+			log.Printf("GRPC: %s disconnected from %s. Server context cancelled.", in.UserId, in.ServerId)
+			cancel()
 			return nil
+		case <-ctx.Done():
+			log.Print("GRPC: Client loop was closed")
 		default:
-			for message := range *s.queue.Messages {
-				wg.Add(1)
-				go func(message nats.Msg) {
-					defer wg.Done()
-					relay(message, srv)
-				}(message)
-			}
+			wg.Add(1)
+			go Forward(ctx, in, srv, s, cancel)
+			wg.Wait()
 		}
-		wg.Wait()
 	}
 }
 
@@ -96,17 +83,19 @@ func (s *Server) Send(ctx context.Context, in *pb.ChatMessage) (*pb.SendResponse
 	msg.Data = payload
 
 	if err := s.cache.Set("myserver", string(payload)); err != nil {
+		log.Printf("error writing message to cache: %v", err)
 		return nil, err
 	}
 
 	if err := s.queue.Publish("myserver", payload); err != nil {
+		log.Printf("error publishing message to queue: %v", err)
 		return nil, err
 	}
 
 	return &pb.SendResponse{Ok: true, Error: ""}, nil
 }
 
-func verifyConnection(srv pb.ChatService_ConnectServer, in *pb.ConnectRequest) {
+func (s *Server) verifyConnection(srv pb.ChatService_ConnectServer, in *pb.ConnectRequest) {
 	srv.Send(&pb.ChatMessage{
 		ChannelId: "system", // system information channel
 		UserId:    "server",
@@ -116,7 +105,7 @@ func verifyConnection(srv pb.ChatService_ConnectServer, in *pb.ConnectRequest) {
 }
 
 // Send messages from NATS to the gRPC client
-func relay(message nats.Msg, srv pb.ChatService_ConnectServer) {
+func relay(message nats.Msg, srv pb.ChatService_ConnectServer, cancel context.CancelFunc) {
 
 	// Convert JSON message to Notification object
 	chatMsg, err := JSONToProto(message.Data)
@@ -127,13 +116,59 @@ func relay(message nats.Msg, srv pb.ChatService_ConnectServer) {
 
 	// Override the timestamp with the current time
 	chatMsg.Ts = fmt.Sprint(time.Now().UnixNano())
-	log.Printf("NATS->GRPC: %s", string(chatMsg.Ts))
+	log.Printf("NATS->GRPC:%s %s %s: %s", chatMsg.ChannelId, chatMsg.UserId, chatMsg.Ts, chatMsg.Text)
 
 	if err := srv.Send(chatMsg); err != nil {
-		log.Printf("send error %v", err)
+		log.Printf("an error occurred while relaying new chat messages: %v", err)
+		cancel()
 		return
 	}
+}
 
-	// Ack the NATS message so it's not sent again
-	message.Ack()
+func (s *Server) getPastMessages(srv pb.ChatService_ConnectServer, in *pb.ConnectRequest) error {
+	pastMessages, err := s.cache.GetFrom(in.ServerId, in.LastTs, "+inf")
+	if err != nil {
+		return err
+	}
+
+	for _, message := range pastMessages {
+		var chatmsg pb.ChatMessage
+		j := protojson.UnmarshalOptions{}
+
+		// Convert JSON message to Notification object
+		if err := j.Unmarshal([]byte(message), &chatmsg); err != nil {
+			log.Printf("unmarshal error %v", err)
+			return err
+		}
+
+		// Send the message to the client
+		if err := srv.Send(&chatmsg); err != nil {
+			log.Printf("an error occurred sending history to client: %v", err)
+			close(*s.queue.Messages)
+			return err
+		}
+	}
+
+	return nil
+}
+
+func Forward(ctx context.Context, in *pb.ConnectRequest, srv pb.ChatService_ConnectServer, s *Server, cancel context.CancelFunc) error {
+	for {
+		select {
+		case <-ctx.Done():
+			log.Printf("GRPC: %s disconnected from %s. Global context cancelled.", in.UserId, in.ServerId)
+			return nil
+
+		default:
+			if err := srv.Context().Err(); err != nil {
+				log.Println("GRPC: Server found the context to be done in the default case, cancelling global context")
+				cancel()
+				return nil
+			}
+
+			for message := range *s.queue.Messages {
+				relay(message, srv, cancel)
+			}
+		}
+	}
 }

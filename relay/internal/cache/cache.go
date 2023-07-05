@@ -12,7 +12,8 @@ type Cache struct {
 	redis *redis.Client
 }
 
-func NewCache(ctx context.Context, redis *redis.Client) *Cache {
+func NewCache(redis *redis.Client) *Cache {
+	ctx := context.Background()
 	return &Cache{ctx: ctx, redis: redis}
 }
 
