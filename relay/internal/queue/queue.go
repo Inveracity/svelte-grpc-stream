@@ -10,12 +10,24 @@ import (
 type Queue struct {
 	nats     *nats.Conn
 	Messages *chan nats.Msg
+	ErrCh    chan error
+	streamid string
 }
 
-func NewQueue(nats *nats.Conn, Messages *chan nats.Msg) *Queue {
+func NewQueue(natsURL string, streamid string) *Queue {
+	natsConn, err := nats.Connect(natsURL)
+	if err != nil {
+		panic(err)
+	}
+
+	errCh := make(chan error)
+	messages := make(chan nats.Msg, 64)
+
 	return &Queue{
-		nats:     nats,
-		Messages: Messages,
+		nats:     natsConn,
+		Messages: &messages,
+		ErrCh:    errCh,
+		streamid: streamid,
 	}
 }
 
@@ -32,20 +44,29 @@ func (q *Queue) Subscribe(ctx context.Context, channel string) error {
 
 	for {
 		select {
+		// Depending on where in the loop we are
+		// either the context is cancelled or an error was caught on the error channel
+		// Currently unsure why.
 		case <-ctx.Done():
 			sub.Unsubscribe()
-			log.Println("NATS: Ubsubbing because global context cancelled")
+			log.Printf("NATS %s: unsubscribing and closing stream", q.streamid)
+			q.Close()
 			return nil
-
+		case <-q.ErrCh:
+			sub.Unsubscribe()
+			log.Printf("NATS %s: unsubscribing", q.streamid)
+			return nil
 		default:
 			msg, err := sub.NextMsgWithContext(ctx)
 			if err != nil {
-				log.Printf("NATS: error getting next message from channel %s: %v", channel, err)
 				continue
 			}
 
 			*q.Messages <- *msg
 		}
 	}
+}
 
+func (q *Queue) Close() {
+	q.nats.Close()
 }

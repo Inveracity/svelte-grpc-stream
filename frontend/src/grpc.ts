@@ -116,6 +116,10 @@ const filtered = (msg: ChatMessage, lastTs: string): boolean => {
     return true;
   }
 
+  if (msg.userId === "server") {
+    return true;
+  }
+
   // Deduplicate messages with the same timestamp
   if (msg.ts === lastTs) {
     return true;
