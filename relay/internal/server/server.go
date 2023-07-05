@@ -17,12 +17,14 @@ import (
 
 type Server struct {
 	pb.UnimplementedChatServiceServer
-	cache *cache.Cache
+	cache   *cache.Cache
+	natsURL string
 }
 
-func NewServer(cache *cache.Cache) *Server {
+func NewServer(natsURL string, cache *cache.Cache) *Server {
 	return &Server{
-		cache: cache,
+		cache:   cache,
+		natsURL: natsURL,
 	}
 }
 
@@ -32,8 +34,8 @@ func (s *Server) Connect(in *pb.ConnectRequest, srv pb.ChatService_ConnectServer
 
 	log.Printf("GRPC %s: user %s connected to server %s", streamid, in.UserId, in.ServerId)
 
-	// Create a NATS queue for this streamid
-	queue := queue.NewQueue("nats:4222", streamid)
+	// Create a NATS queue subscriber for this streamid
+	queue := queue.NewQueue(s.natsURL, streamid)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

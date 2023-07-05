@@ -29,7 +29,7 @@ func NewRelay(port int, natsURL string, redisURL string) *Relay {
 
 	cache := cache.NewCache(redisClient)
 
-	grpcServer := server.NewServer(cache)
+	grpcServer := server.NewServer(natsURL, cache)
 	return &Relay{
 		port:   port,
 		server: grpcServer,
