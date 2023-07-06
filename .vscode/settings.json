@@ -10,5 +10,8 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
     },
+  },
+  "files.associations": {
+    "*.nomad": "hcl",
   }
 }
