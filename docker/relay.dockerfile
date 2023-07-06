@@ -10,10 +10,10 @@ RUN go mod download
 COPY relay .
 
 RUN go build -o /app/relay cmd/relay/main.go
-CMD ["/app/relay"]
+#CMD ["/app/relay"]
 
-# FROM scratch
-# WORKDIR /
-# COPY --from=build /app/relay /app/relay
-# EXPOSE 50051
-# CMD ["/app/relay"]
+FROM scratch
+WORKDIR /
+COPY --from=build /app/relay /app/relay
+EXPOSE 50051
+ENTRYPOINT ["/app/relay"]
