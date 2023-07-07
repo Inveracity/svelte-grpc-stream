@@ -18,7 +18,7 @@ export const chat_cache = persisted(
 )
 
 const transport = new GrpcWebFetchTransport({
-  baseUrl: 'http://relay.docker.localhost'
+  baseUrl: 'http://frontend.docker.localhost/relay'
 });
 
 let controller = new AbortController();
@@ -72,17 +72,16 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
 
     }
   } catch (e: any) {
-    console.log("Stream closed");
+    // Stream closed
   }
 
-  await sub.headers;
-  await sub.trailers;
+  // await sub.headers;
+  // await sub.trailers;
   status.disconnected();
 };
 
 // The client can actively Disconnect letting the server know to close the stream
 export const Disconnect = async () => {
-  console.log("Disconnect")
   controller.abort();
 };
 

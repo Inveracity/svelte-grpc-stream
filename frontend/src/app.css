@@ -11,7 +11,7 @@ body {
   height: 100vh;
   margin: 0;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   max-height: 100vh;
 }
 
@@ -36,6 +36,7 @@ a:-webkit-any-link {
   flex-direction: column;
   min-height: 0;
 }
+
 .row {
   flex-grow: 1;
   display: flex;
