@@ -4,18 +4,15 @@
 	import Login from '../components/Login.svelte';
 	import Status from '../components/Status.svelte';
 	import { currentUser } from '$lib/pocketbase';
-	import { Connect, Disconnect } from '../grpc';
+	import { Connect, Disconnect } from '$lib/grpc';
 	import { server } from '../stores/server';
-	import { username } from '../stores/username';
-	import { messages } from '../stores/messages';
 
 	onMount(() => {
 		if ($currentUser) {
-			Connect($server, $username, '0');
+			Connect($server, $currentUser.username, '0');
 		}
 	});
 	onDestroy(() => {
-		messages.reset();
 		Disconnect();
 	});
 </script>

@@ -1,15 +1,16 @@
 import { get } from 'svelte/store'
+import { env } from '$env/dynamic/public';
 
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 import { persisted } from 'svelte-local-storage-store'
 import { DateTime } from 'luxon';
 
-import { messages } from './stores/messages';
-import { status } from './stores/status';
+import { messages } from '../stores/messages';
+import { status } from '../stores/status';
 
-import { ChatServiceClient } from './proto/chat/v1/chat.client';
-import type { ChatMessage } from './proto/chat/v1/chat';
-import type { Message, OutgoingMessage } from './types';
+import { ChatServiceClient } from '../proto/chat/v1/chat.client';
+import type { ChatMessage } from '../proto/chat/v1/chat';
+import type { Message, OutgoingMessage } from '../types';
 
 export const chat_cache = persisted(
   'chatmessages', // storage
@@ -18,7 +19,7 @@ export const chat_cache = persisted(
 )
 
 const transport = new GrpcWebFetchTransport({
-  baseUrl: 'http://frontend.docker.localhost/relay'
+  baseUrl: env.PUBLIC_RELAY_URL
 });
 
 let controller = new AbortController();
@@ -77,11 +78,14 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
 
   // await sub.headers;
   // await sub.trailers;
+  chat_cache.set({ lastTs: "0" })
   status.disconnected();
 };
 
 // The client can actively Disconnect letting the server know to close the stream
 export const Disconnect = async () => {
+  chat_cache.set({ lastTs: "0" })
+  messages.reset();
   controller.abort();
 };
 

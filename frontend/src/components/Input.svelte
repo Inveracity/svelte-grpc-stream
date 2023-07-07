@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { channel } from '../stores/channel';
-	import { username } from '../stores/username';
 	import { currentUser } from '$lib/pocketbase';
 	import { status } from '../stores/status';
-	import { SendMessage } from '../grpc';
+	import { SendMessage } from '../lib/grpc';
 	import type { OutgoingMessage } from '../types';
 	let message = '';
 
