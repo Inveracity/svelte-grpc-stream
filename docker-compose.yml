@@ -40,12 +40,13 @@ services:
       - "50051:50051"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.relay.rule=Host(`frontend.docker.localhost`) && PathPrefix(`/relay`)"
+      - "traefik.http.routers.relay.rule=Host(`frontend.docker.localhost`) && PathPrefix(`/relay/proto.chat.v1.ChatService`)"
       - "traefik.http.services.relay.loadbalancer.server.scheme=h2c"
+      # Middleware
       - "traefik.http.middlewares.relay-grpc.grpcWeb.allowOrigins=*"
-      - "traefik.http.routers.relay.middlewares=relay-grpc"
-      - "traefik.http.routers.relay.middlewares=relay-stripprefix"
       - "traefik.http.middlewares.relay-stripprefix.stripprefix.prefixes=/relay"
+      - "traefik.http.middlewares.relay-headers.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.routers.relay.middlewares=relay-grpc,relay-headers,relay-stripprefix"
 
   frontend:
     container_name: frontend
