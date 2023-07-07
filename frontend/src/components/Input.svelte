@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { channel } from '../stores/channel';
-	import { username } from '../stores/username';
+	import { currentUser } from '$lib/pocketbase';
 	import { status } from '../stores/status';
-	import { SendMessage } from '../grpc';
+	import { SendMessage } from '../lib/grpc';
 	import type { OutgoingMessage } from '../types';
 	let message = '';
 
@@ -11,18 +11,23 @@
 			e.preventDefault();
 			let msg: OutgoingMessage = {
 				channelId: $channel,
-				userId: $username,
-				text: message,
+				userId: $currentUser?.username,
+				text: message
 			};
 			SendMessage(msg);
 			message = '';
 		}
 	};
-
 </script>
 
 <div class="userInput">
-	<textarea id="userinput" placeholder={$status === "connected" ? "Message" : "disconnected" } bind:value={message} on:keypress={onKeyPress} disabled={$status !== "connected"} />
+	<textarea
+		id="userinput"
+		placeholder={$status === 'connected' ? 'Message' : 'disconnected'}
+		bind:value={message}
+		on:keypress={onKeyPress}
+		disabled={$status !== 'connected'}
+	/>
 </div>
 
 <style>

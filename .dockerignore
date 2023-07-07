@@ -11,6 +11,7 @@ docker
 frontend/node_modules
 frontend/.svelte-kit
 frontend/build
+frontend/.env
 .eslintignore
 .eslintrc.cjs
 .prettierrc

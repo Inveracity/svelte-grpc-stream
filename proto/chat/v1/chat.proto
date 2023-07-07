@@ -14,6 +14,7 @@ message ConnectRequest {
   string server_id = 1;
   string user_id = 2;
   string last_ts = 3; // last timestamp received by the client
+  string jwt = 4;
 }
 
 // Chat server stream after subscribing to a channel

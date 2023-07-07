@@ -8,6 +8,7 @@ import (
 
 	"github.com/nats-io/nats.go"
 
+	"github.com/inveracity/svelte-grpc-stream/internal/auth"
 	"github.com/inveracity/svelte-grpc-stream/internal/cache"
 	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/chat/v1"
 	"github.com/inveracity/svelte-grpc-stream/internal/queue"
@@ -19,12 +20,18 @@ type Server struct {
 	pb.UnimplementedChatServiceServer
 	cache   *cache.Cache
 	natsURL string
+	pbURL   string
+	pbAdmin string
+	pbPass  string
 }
 
-func NewServer(natsURL string, cache *cache.Cache) *Server {
+func NewServer(natsURL, pbURL, pbAdmin, pbPass string, cache *cache.Cache) *Server {
 	return &Server{
 		cache:   cache,
 		natsURL: natsURL,
+		pbURL:   pbURL,
+		pbAdmin: pbAdmin,
+		pbPass:  pbPass,
 	}
 }
 
@@ -33,6 +40,19 @@ func (s *Server) Connect(in *pb.ConnectRequest, srv pb.ChatService_ConnectServer
 	streamid := RandStringRunes(10)
 
 	log.Printf("GRPC %s: user %s connected to server %s", streamid, in.UserId, in.ServerId)
+
+	auth := auth.New(s.pbURL, s.pbAdmin, s.pbPass)
+
+	authed, err := auth.VerifyUserToken(in.Jwt)
+	if err != nil {
+		log.Printf("GRPC %s: error verifying jwt: %v", streamid, err)
+		return fmt.Errorf("error verifying jwt")
+	}
+
+	if !authed {
+		log.Printf("GRPC %s: user %s not authorized", streamid, in.UserId)
+		return fmt.Errorf("user not authorized")
+	}
 
 	// Create a NATS queue subscriber for this streamid
 	queue := queue.NewQueue(s.natsURL, streamid)
@@ -78,7 +98,7 @@ func (s *Server) Connect(in *pb.ConnectRequest, srv pb.ChatService_ConnectServer
 // Send receives a message from the client and publishes it to the NATS server
 func (s *Server) Send(ctx context.Context, in *pb.ChatMessage) (*pb.SendResponse, error) {
 	// log.Printf("GRPC: %s/%s->%s", in.UserId, in.ChannelId, in.Text)
-	queue := queue.NewQueue("nats:4222", "NOT_USED")
+	queue := queue.NewQueue(s.natsURL, "NOT_USED")
 	// Override timstamp
 	in.Ts = fmt.Sprint(time.Now().UnixNano())
 

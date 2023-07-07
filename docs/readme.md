@@ -19,29 +19,35 @@ Whenever a user subscribes to realtime notifications, it creates a queue in NATS
 sequenceDiagram
 autonumber
 actor Alice
-participant Relay
-participant Nats
-participant Redis
-participant API
 actor Bob
+participant Relay
+participant Redis
+participant PocketBase
+participant Nats
 
 
-Bob   ->>+ API   : Sends msg to "channel1"
-API   ->>  Redis : Cache message in Redis
-API   ->>- Nats  : Publish msg to "channel1"
-Note  over Nats  : Since there are no subscribers the msg is dropped
-Alice ->>+ Relay : Subscribe to "channel1"
-Relay ->>+ Redis : Get "channel1" history from last timestamp
-Redis ->>- Relay : Bob's message
-Relay ->>  Alice : Bob's message arrives at Alice
-Relay ->>- Nats  : Subscribe to "channel1"
-Relay ->>  Alice : Open server stream
+Alice      ->>  PocketBase : Authenticate
+Bob        ->>  PocketBase : Authenticate
+Bob        ->>+ Relay      : Sends msg to "channel1"
+Relay      ->>+ PocketBase : Verify Token
+PocketBase ->>- Relay      : OK
+Relay      ->>  Redis      : Cache message in Redis
+Relay      ->>- Nats       : Publish msg to "channel1"
+Note       over Nats       : Since there are no subscribers the msg is dropped
+Alice      ->>+ Relay      : Subscribe to "channel1"
+Relay      ->>+ PocketBase : Verify Token
+PocketBase ->>- Relay      : OK
+Relay      ->>+ Redis      : Get "channel1" history from last timestamp
+Redis      ->>- Relay      : Bob's message
+Relay      ->>  Alice      : Bob's message arrives at Alice
+Relay      ->>- Nats       : Subscribe to "channel1"
+Relay      ->>  Alice      : Open server stream
 
 loop Server Stream
     Nats  -->+ Relay : Subscribe
-    Bob   ->>  API   : New message
-    API   ->>  Redis : Cache
-    API   ->>  Nats  : Publish
+    Bob   ->>  Relay : New message
+    Relay ->>  Redis : Cache
+    Relay ->>  Nats  : Publish
     Nats  -->> Relay : Msg
     Note  over Relay : Nats -> gRPC
     Relay -->> Alice : gRPC server stream

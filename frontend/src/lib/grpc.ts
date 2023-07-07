@@ -1,15 +1,16 @@
 import { get } from 'svelte/store'
+import { env } from '$env/dynamic/public';
 
 import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 import { persisted } from 'svelte-local-storage-store'
 import { DateTime } from 'luxon';
 
-import { messages } from './stores/messages';
-import { status } from './stores/status';
+import { messages } from '../stores/messages';
+import { status } from '../stores/status';
 
-import { ChatServiceClient } from './proto/chat/v1/chat.client';
-import type { ChatMessage } from './proto/chat/v1/chat';
-import type { Message, OutgoingMessage } from './types';
+import { ChatServiceClient } from '../proto/chat/v1/chat.client';
+import type { ChatMessage } from '../proto/chat/v1/chat';
+import type { Message, OutgoingMessage } from '../types';
 
 export const chat_cache = persisted(
   'chatmessages', // storage
@@ -18,12 +19,12 @@ export const chat_cache = persisted(
 )
 
 const transport = new GrpcWebFetchTransport({
-  baseUrl: 'http://relay.docker.localhost'
+  baseUrl: env.PUBLIC_RELAY_URL
 });
 
 let controller = new AbortController();
 
-export const Connect = async (serverId: string, userId: string, timestamp: string) => {
+export const Connect = async (serverId: string, userId: string, timestamp: string, jwt: string) => {
   // If the client disconnected, the abort controller is no longer valid and a new one must be created
   if (controller.signal.aborted) {
     controller = new AbortController();
@@ -39,7 +40,8 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
   const sub = new ChatServiceClient(transport).connect({
     serverId: serverId,
     userId: userId,
-    lastTs: timestamp
+    lastTs: timestamp,
+    jwt: jwt,
   }, opts);
 
   // While the connection is attempting to open, let the UI show a pending state
@@ -72,17 +74,19 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
 
     }
   } catch (e: any) {
-    console.log("Stream closed");
+    // Stream closed
   }
 
-  await sub.headers;
-  await sub.trailers;
+  // await sub.headers;
+  // await sub.trailers;
+  chat_cache.set({ lastTs: "0" })
   status.disconnected();
 };
 
 // The client can actively Disconnect letting the server know to close the stream
 export const Disconnect = async () => {
-  console.log("Disconnect")
+  chat_cache.set({ lastTs: "0" })
+  messages.reset();
   controller.abort();
 };
 

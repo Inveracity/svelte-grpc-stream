@@ -31,7 +31,7 @@ services:
   relay:
     depends_on:
       - nats
-      #- redis
+      - redis
     container_name: relay
     build:
       context: .
@@ -40,17 +40,24 @@ services:
       - "50051:50051"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.relay.rule=Host(`relay.docker.localhost`)"
+      - "traefik.http.routers.relay.rule=Host(`frontend.docker.localhost`) && PathPrefix(`/relay/proto.chat.v1.ChatService`)"
       - "traefik.http.services.relay.loadbalancer.server.scheme=h2c"
+      # Middleware
       - "traefik.http.middlewares.relay-grpc.grpcWeb.allowOrigins=*"
-      - "traefik.http.routers.relay.middlewares=relay-grpc"
+      - "traefik.http.middlewares.relay-stripprefix.stripprefix.prefixes=/relay"
+      - "traefik.http.middlewares.relay-headers.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.routers.relay.middlewares=relay-grpc,relay-headers,relay-stripprefix"
+    environment:
+      - PB_USER=admin@localhost.com
+      - PB_PASS=abcdefghijkl
 
   frontend:
     container_name: frontend
     depends_on:
       - nats
-      #- redis
+      - redis
       - relay
+      - pocketbase
     build:
       context: .
       dockerfile: docker/frontend.dockerfile
@@ -60,3 +67,23 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`frontend.docker.localhost`)"
       - "traefik.http.services.frontend.loadbalancer.server.scheme=http"
+    environment:
+      - PUBLIC_POCKETBASE_URL=http://frontend.docker.localhost/pocketbase
+      - PUBLIC_RELAY_URL=http://frontend.docker.localhost/relay
+
+  pocketbase:
+    container_name: pocketbase
+    image: inveracity/pocketbase:latest
+    build:
+      context: .
+      dockerfile: docker/pocketbase.dockerfile
+    ports:
+      - 8090:8090
+    # volumes:
+    #   - ./pb_data:/pb_data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pocketbase.rule=Host(`frontend.docker.localhost`) && PathPrefix(`/pocketbase`)"
+      - "traefik.http.services.pocketbase.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.pocketbase.middlewares=pocketbase-stripprefix"
+      - "traefik.http.middlewares.pocketbase-stripprefix.stripprefix.prefixes=/pocketbase"
