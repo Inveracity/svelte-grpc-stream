@@ -11,6 +11,7 @@ This project consists of 5 infrastructure components
 - NATS: for queueing notifications that need to be relayed
 - Redis: caches messages
 - Relay (golang): Picks up messages from the queue and forwards them to a gRPC stream to the frontend
+- Pocketbase: For user authentication
 - Frontend (svelte & typecript): For sending notifications via the API and recieving notifications via the Relay.
 
 ## Documentation
@@ -36,8 +37,12 @@ In your hosts file set:
 
 ```plaintext
 127.0.0.1 frontend.docker.localhost
-127.0.0.1 relay.docker.localhost
-127.0.0.1 api.docker.localhost
 ```
 
 After running `docker compose up`, <http://frontend.docker.localhost> should now be available via Traefik.
+
+## Quickstart
+
+```sh
+docker compose up --build
+```
