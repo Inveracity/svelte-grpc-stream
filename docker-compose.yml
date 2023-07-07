@@ -65,7 +65,8 @@ services:
       - "traefik.http.routers.frontend.rule=Host(`frontend.docker.localhost`)"
       - "traefik.http.services.frontend.loadbalancer.server.scheme=http"
     environment:
-      - PUBLIC_POCKETBASE_URL=frontend.docker.localhost/pocketbase
+      - PUBLIC_POCKETBASE_URL=http://frontend.docker.localhost/pocketbase
+      - PUBLIC_RELAY_URL=http://frontend.docker.localhost/relay
 
   pocketbase:
     container_name: pocketbase
