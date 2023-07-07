@@ -20,7 +20,7 @@ type Relay struct {
 	port   int
 }
 
-func NewRelay(port int, natsURL string, redisURL string) *Relay {
+func NewRelay(port int, natsURL, redisURL, pbURL, pbAdmin, pbPass string) *Relay {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     redisURL,
 		Password: "",
@@ -29,7 +29,7 @@ func NewRelay(port int, natsURL string, redisURL string) *Relay {
 
 	cache := cache.NewCache(redisClient)
 
-	grpcServer := server.NewServer(natsURL, cache)
+	grpcServer := server.NewServer(natsURL, pbURL, pbAdmin, pbPass, cache)
 	return &Relay{
 		port:   port,
 		server: grpcServer,

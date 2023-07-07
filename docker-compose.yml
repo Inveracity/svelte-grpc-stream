@@ -47,6 +47,9 @@ services:
       - "traefik.http.middlewares.relay-stripprefix.stripprefix.prefixes=/relay"
       - "traefik.http.middlewares.relay-headers.headers.accesscontrolalloworiginlist=*"
       - "traefik.http.routers.relay.middlewares=relay-grpc,relay-headers,relay-stripprefix"
+    environment:
+      - PB_USER=admin@localhost.com
+      - PB_PASS=abcdefghijkl
 
   frontend:
     container_name: frontend

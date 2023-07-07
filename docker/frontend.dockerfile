@@ -12,12 +12,12 @@ ENV HOST=0.0.0.0
 EXPOSE 3000
 CMD ["node", "build/index.js"]
 
-# FROM node:20-alpine3.18
+FROM node:20-alpine3.18
 
-# WORKDIR /app
-# COPY --from=build /app .
+WORKDIR /app
+COPY --from=build /app .
 
 
-# ENV HOST=0.0.0.0
-# EXPOSE 3000
-# CMD ["node","build/index.js"]
+ENV HOST=0.0.0.0
+EXPOSE 3000
+CMD ["node","build/index.js"]

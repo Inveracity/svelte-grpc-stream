@@ -30,6 +30,10 @@ export interface ConnectRequest {
      * @generated from protobuf field: string last_ts = 3;
      */
     lastTs: string; // last timestamp received by the client
+    /**
+     * @generated from protobuf field: string jwt = 4;
+     */
+    jwt: string;
 }
 /**
  * Chat server stream after subscribing to a channel
@@ -75,11 +79,12 @@ class ConnectRequest$Type extends MessageType<ConnectRequest> {
         super("proto.chat.v1.ConnectRequest", [
             { no: 1, name: "server_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "last_ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 3, name: "last_ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "jwt", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ConnectRequest>): ConnectRequest {
-        const message = { serverId: "", userId: "", lastTs: "" };
+        const message = { serverId: "", userId: "", lastTs: "", jwt: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ConnectRequest>(this, message, value);
@@ -98,6 +103,9 @@ class ConnectRequest$Type extends MessageType<ConnectRequest> {
                     break;
                 case /* string last_ts */ 3:
                     message.lastTs = reader.string();
+                    break;
+                case /* string jwt */ 4:
+                    message.jwt = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -120,6 +128,9 @@ class ConnectRequest$Type extends MessageType<ConnectRequest> {
         /* string last_ts = 3; */
         if (message.lastTs !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.lastTs);
+        /* string jwt = 4; */
+        if (message.jwt !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.jwt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

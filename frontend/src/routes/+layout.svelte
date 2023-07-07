@@ -3,13 +3,13 @@
 	import '../app.css';
 	import Login from '../components/Login.svelte';
 	import Status from '../components/Status.svelte';
-	import { currentUser } from '$lib/pocketbase';
+	import { currentUser, pb } from '$lib/pocketbase';
 	import { Connect, Disconnect } from '$lib/grpc';
 	import { server } from '../stores/server';
 
 	onMount(() => {
 		if ($currentUser) {
-			Connect($server, $currentUser.username, '0');
+			Connect($server, $currentUser.username, '0', pb.authStore.token);
 		}
 	});
 	onDestroy(() => {

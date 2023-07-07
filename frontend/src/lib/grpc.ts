@@ -24,7 +24,7 @@ const transport = new GrpcWebFetchTransport({
 
 let controller = new AbortController();
 
-export const Connect = async (serverId: string, userId: string, timestamp: string) => {
+export const Connect = async (serverId: string, userId: string, timestamp: string, jwt: string) => {
   // If the client disconnected, the abort controller is no longer valid and a new one must be created
   if (controller.signal.aborted) {
     controller = new AbortController();
@@ -40,7 +40,8 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
   const sub = new ChatServiceClient(transport).connect({
     serverId: serverId,
     userId: userId,
-    lastTs: timestamp
+    lastTs: timestamp,
+    jwt: jwt,
   }, opts);
 
   // While the connection is attempting to open, let the UI show a pending state
