@@ -7,11 +7,11 @@
 </script>
 
 {#if $status === 'pending'}
-	<Loader />
+<span class="loading loading-dots loading-lg"></span>
 {:else if $status !== 'connected'}
-	<div class="flex flex-row">
+	<div class="flex flex-row h-full w-full">
 		<Channels />
-		<div class="flex flex-col">
+		<div class="flex flex-col w-full">
 			<History />
 			<Input />
 		</div>

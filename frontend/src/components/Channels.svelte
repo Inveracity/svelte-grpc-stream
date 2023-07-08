@@ -10,38 +10,16 @@
 	};
 </script>
 
-<div class="h-full">
-	<div class="flex flex-col h-full">
+<div class="flex w-40">
+	<div class="flex flex-col w-full">
 		{#each channels as chan}
 			<!-- disabled is set to true when channel is selected -->
-			<button class="button" disabled={chan === $channel} on:click={(e) => selectChannel(e, chan)}>
+			<button
+				class="btn {chan === $channel ? 'btn-secondary' : 'btn-secondary btn-outline  '} m-2"
+				on:click={(e) => selectChannel(e, chan)}
+			>
 				<p>{chan}</p>
 			</button>
 		{/each}
 	</div>
 </div>
-
-<style>
-	.sidebar {
-		background-color: #333;
-		width: 150px;
-		height: 100%;
-		flex: none;
-	}
-	.channelItems {
-		padding: 10px;
-	}
-	.button {
-		cursor: pointer;
-		width: 100%;
-		background-color: #333;
-		color: white;
-		border: none;
-	}
-	button:hover {
-		background-color: #a5a5a5;
-	}
-	button:disabled {
-		background-color: #636363;
-	}
-</style>

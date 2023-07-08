@@ -2,6 +2,7 @@
 	import { beforeUpdate, afterUpdate } from 'svelte';
 	import { channel } from '../stores/channel';
 	import { messages } from '../stores/messages';
+  import { currentUser } from '$lib/pocketbase';
 
 	let eventDiv: HTMLDivElement;
 	let autoscroll = false;
@@ -20,11 +21,11 @@
 	});
 </script>
 
-<div class="flex w-full" bind:this={eventDiv}>
+<div class="flex flex-col bg-slate-900 w-full h-full" bind:this={eventDiv}>
 	{#each $messages as msg}
 		{#if msg.channel === $channel}
-			<div class="chat chat-start">
-				<div class="chat-bubble">
+			<div class="chat {msg.user === $currentUser?.username ? 'chat-end' : 'chat-start'} w-auto">
+        <div class="chat-bubble {msg.user === $currentUser?.username ? 'chat-bubble-primary' : 'chat-bubble-secondary'}">
 					<p>{msg.timestamp}</p>
 					<p>{msg.user}</p>
 					<p>{msg.message}</p>
@@ -35,11 +36,6 @@
 </div>
 
 <style>
-	.content {
-		flex: 1;
-		padding: 10px;
-		overflow-y: scroll;
-	}
 	::-webkit-scrollbar {
 		width: 12px;
 	}

@@ -23,10 +23,10 @@
 		<button on:click={logout}> Logout </button>
 	{:else}
 		<form on:submit|preventDefault>
-			<input type="text" bind:value={username} placeholder="Email" />
-			<input type="password" bind:value={password} placeholder="Password" />
-			<input type="text" bind:value={$server} />
-			<button class="btn" on:click={login}> Login </button>
+			<input class="input input-primary" type="text" bind:value={username} placeholder="Email" />
+			<input class="input input-secondary" type="password" bind:value={password} placeholder="Password" />
+			<input class="input input-accent" type="text" bind:value={$server} />
+			<button class="btn btn-primary" on:click={login}> Login </button>
 		</form>
 	{/if}
 </div>

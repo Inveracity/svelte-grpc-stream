@@ -17,15 +17,11 @@
 	});
 </script>
 
-<div class="w-screen h-screen">
-	<div class="flex flex-col">
-		<div class="flex flex-row justify-between">
-			<Status />
-			<Login />
-		</div>
-
-		<div class="flex-1">
-			<slot />
-		</div>
+<div class="flex flex-col h-screen">
+	<div class="flex flex-row justify-between">
+		<Status />
+		<Login />
 	</div>
+
+	<slot />
 </div>
