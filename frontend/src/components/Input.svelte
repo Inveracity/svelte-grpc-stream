@@ -21,6 +21,7 @@
 </script>
 
 <div class="w-full">
+  <div class="m-2">
 	<textarea
     class="textarea textarea-secondary w-full h-12"
 		placeholder={$status === 'connected' ? 'Message' : '⛔'}
@@ -28,6 +29,7 @@
 		on:keypress={onKeyPress}
     disabled={$status !== 'connected'}
 	/>
+  </div>
 </div>
 
 <style>

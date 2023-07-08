@@ -3,6 +3,8 @@
 	import { status } from '../stores/status';
 </script>
 
-<div>
-  <div class="badge {$status === 'connected' ? 'badge-succes' : 'badge-neutral'} w-40">{$server}</div>
+
+<div class="badge {$status === 'connected' ? 'badge-success' : 'badge-neutral'} w-auto h-full m-1">
+  {$server}
 </div>
+

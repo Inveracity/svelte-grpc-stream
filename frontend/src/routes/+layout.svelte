@@ -18,7 +18,7 @@
 </script>
 
 <div class="flex flex-col h-screen">
-	<div class="flex flex-row justify-between">
+	<div class="flex flex-row justify-between bg-secondary-content h-10">
 		<Status />
 		<Login />
 	</div>
