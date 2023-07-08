@@ -5,6 +5,7 @@
     "golang.go",
     "peterj.proto",
     "svelte.svelte-vscode",
-    "hashicorp.hcl"
+    "hashicorp.hcl",
+    "bradlc.vscode-tailwindcss"
   ]
 }

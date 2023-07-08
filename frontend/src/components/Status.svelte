@@ -4,16 +4,8 @@
 	import Circle from './Circle.svelte';
 </script>
 
-<div class="status">
+<div>
 	<Circle color={$status === 'connected' ? 'green' : 'grey'}>
 		<p>connected to server: {$server}</p>
 	</Circle>
 </div>
-
-<style>
-	.status {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
-</style>

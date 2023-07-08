@@ -1,6 +1,6 @@
 <script>
-	import { onDestroy, onMount } from 'svelte';
 	import '../app.css';
+	import { onDestroy, onMount } from 'svelte';
 	import Login from '../components/Login.svelte';
 	import Status from '../components/Status.svelte';
 	import { currentUser, pb } from '$lib/pocketbase';
@@ -17,24 +17,15 @@
 	});
 </script>
 
-<div class="column">
-	<div class="statusbar">
-		<Status />
-		<Login />
+<div class="w-screen h-screen">
+	<div class="flex flex-col">
+		<div class="flex flex-row justify-between">
+			<Status />
+			<Login />
+		</div>
+
+		<div class="flex-1">
+			<slot />
+		</div>
 	</div>
-
-	<slot />
 </div>
-
-<style>
-	.statusbar {
-		display: flex;
-		background-color: #272727;
-		border: 0px;
-		border-radius: 4px;
-		padding: 10px;
-		margin: 0px 0;
-		height: 30px;
-		justify-content: space-between;
-	}
-</style>

@@ -1,7 +1,7 @@
 <script>
-    import { BarLoader } from 'svelte-loading-spinners';
+	import { BarLoader } from 'svelte-loading-spinners';
 </script>
 
-<div class="center">
-    <BarLoader color="#fff" />
+<div>
+	<BarLoader color="#fff" />
 </div>

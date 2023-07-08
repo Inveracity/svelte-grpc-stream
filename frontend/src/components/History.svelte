@@ -20,13 +20,15 @@
 	});
 </script>
 
-<div class="content" bind:this={eventDiv}>
+<div class="flex w-full" bind:this={eventDiv}>
 	{#each $messages as msg}
 		{#if msg.channel === $channel}
-			<div class="chatline">
-				<p id="timestamp"> {msg.timestamp} </p>
-				<p id="username"> {msg.user} </p>
-				<p> {msg.message} </p>
+			<div class="chat chat-start">
+				<div class="chat-bubble">
+					<p>{msg.timestamp}</p>
+					<p>{msg.user}</p>
+					<p>{msg.message}</p>
+				</div>
 			</div>
 		{/if}
 	{/each}
@@ -43,35 +45,9 @@
 	}
 	::-webkit-scrollbar-track {
 		background-color: rgba(0, 0, 0, 0.2);
-
 	}
 	::-webkit-scrollbar-thumb {
 		border-radius: 10px;
 		background-color: rgba(183, 110, 255, 0.491);
-	}
-	.chatline {
-		display: flex;
-		flex-direction: row;
-		padding: 0px;
-		margin: 0px;
-		white-space: pre-line;
-		align-items: baseline;
-	}
-	#timestamp {
-		display: flex;
-		font-size: 0.8em;
-		margin-right: 10px;
-		color: #999;
-		align-items: center;
-		width: 150px;
-	}
-	#username {
-		display: inline-block;
-		width: auto;
-		max-width: 400px;
-		min-width: 150px;
-		margin-right: 10px;
-		color: #9d87e3;
-		align-items: center;
 	}
 </style>

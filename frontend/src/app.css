@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
-
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/*
 html {
   height: 100%;
   font-family: 'Fira Code', monospace;
@@ -42,4 +45,4 @@ a:-webkit-any-link {
   display: flex;
   flex-direction: row;
   min-height: 0;
-}
+} */

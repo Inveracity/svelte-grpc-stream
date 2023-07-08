@@ -1,5 +1,4 @@
 <script>
-	import '../app.css';
 	import Channels from '../components/Channels.svelte';
 	import Input from '../components/Input.svelte';
 	import History from '../components/History.svelte';
@@ -9,10 +8,10 @@
 
 {#if $status === 'pending'}
 	<Loader />
-{:else if $status === 'connected'}
-	<div class="row">
+{:else if $status !== 'connected'}
+	<div class="flex flex-row">
 		<Channels />
-		<div class="column">
+		<div class="flex flex-col">
 			<History />
 			<Input />
 		</div>

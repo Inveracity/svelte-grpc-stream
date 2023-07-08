@@ -10,8 +10,8 @@
 	};
 </script>
 
-<div class="sidebar">
-	<div class="channelItems">
+<div class="h-full">
+	<div class="flex flex-col h-full">
 		{#each channels as chan}
 			<!-- disabled is set to true when channel is selected -->
 			<button class="button" disabled={chan === $channel} on:click={(e) => selectChannel(e, chan)}>
