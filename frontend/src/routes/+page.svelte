@@ -3,7 +3,6 @@
 	import Input from '../components/Input.svelte';
 	import History from '../components/History.svelte';
 	import { status } from '../stores/status';
-	import Loader from '../components/Loader.svelte';
 </script>
 
 {#if $status === 'pending'}

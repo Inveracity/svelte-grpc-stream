@@ -21,14 +21,16 @@
 	});
 </script>
 
-<div class="flex flex-col bg-slate-900 w-full h-full" bind:this={eventDiv}>
+<div class="flex flex-col w-full h-full" bind:this={eventDiv}>
 	{#each $messages as msg}
 		{#if msg.channel === $channel}
 			<div class="chat {msg.user === $currentUser?.username ? 'chat-end' : 'chat-start'} w-auto">
+        <div class="chat-header">
+          {msg.user}
+          <time class="text-xs opacity-50">{msg.timestamp}</time>
+        </div>
         <div class="chat-bubble {msg.user === $currentUser?.username ? 'chat-bubble-primary' : 'chat-bubble-secondary'}">
-					<p>{msg.timestamp}</p>
-					<p>{msg.user}</p>
-					<p>{msg.message}</p>
+					{msg.message}
 				</div>
 			</div>
 		{/if}
