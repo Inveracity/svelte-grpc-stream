@@ -6,6 +6,7 @@
 	import { currentUser, pb } from '$lib/pocketbase';
 	import { Connect, Disconnect } from '$lib/grpc';
 	import { server } from '../stores/server';
+	import Navbar from '../components/Navbar.svelte';
 
 	onMount(() => {
 		if ($currentUser) {
@@ -18,9 +19,8 @@
 </script>
 
 <div class="flex flex-col h-screen">
-	<div class="flex flex-row justify-between bg-secondary-content h-10">
-		<Status />
-		<Login />
+	<div class="flex flex-row justify-between bg-secondary-content">
+		<Navbar />
 	</div>
 
 	<slot />
