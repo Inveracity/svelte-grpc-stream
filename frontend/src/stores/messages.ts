@@ -1,8 +1,10 @@
 import { writable } from 'svelte/store';
 import type { Message } from '../types';
 
+const democontent: Array<Message> = []
+
 function createMessages() {
-  const { subscribe, set, update } = writable<Array<Message>>([]);
+  const { subscribe, set, update } = writable<Array<Message>>(democontent);
 
   return {
     subscribe,

@@ -25,6 +25,9 @@ const transport = new GrpcWebFetchTransport({
 let controller = new AbortController();
 
 export const Connect = async (serverId: string, userId: string, timestamp: string, jwt: string) => {
+  // While the connection is attempting to open, let the UI show a pending state
+  status.pending();
+
   // If the client disconnected, the abort controller is no longer valid and a new one must be created
   if (controller.signal.aborted) {
     controller = new AbortController();
@@ -34,7 +37,7 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
   const opts = transport.mergeOptions({ abort: controller.signal });
 
   // Get the last timestamp from the cache
-  let lastTs = get(chat_cache).lastTs
+  const lastTs = get(chat_cache).lastTs
 
   // Create a new subscription to the server
   const sub = new ChatServiceClient(transport).connect({
@@ -44,8 +47,6 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
     jwt: jwt,
   }, opts);
 
-  // While the connection is attempting to open, let the UI show a pending state
-  status.pending();
 
   // If the connection fails, let the UI show an error state
   sub.status.catch((e: Error) => {
@@ -73,7 +74,7 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
       chat_cache.set({ lastTs: msg.ts })
 
     }
-  } catch (e: any) {
+  } catch (_) {
     // Stream closed
   }
 
@@ -135,7 +136,7 @@ const filtered = (msg: ChatMessage, lastTs: string): boolean => {
 const timestampToDate = (timestamp: string): string => {
   try {
     const nano = parseInt(timestamp)
-    return DateTime.fromMillis(nano / 1000000).toFormat("yyyy-MM-dd HH:mm:ss")
+    return DateTime.fromMillis(nano / 1000000).toFormat("HH:mm")
   } catch (e) {
     console.log(e);
     return timestamp;

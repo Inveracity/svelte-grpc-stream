@@ -2,6 +2,8 @@
 	import { beforeUpdate, afterUpdate } from 'svelte';
 	import { channel } from '../stores/channel';
 	import { messages } from '../stores/messages';
+	import { currentUser } from '$lib/pocketbase';
+	import { FaceLaughSolid } from 'flowbite-svelte-icons';
 
 	let eventDiv: HTMLDivElement;
 	let autoscroll = false;
@@ -20,58 +22,31 @@
 	});
 </script>
 
-<div class="content" bind:this={eventDiv}>
+<div class="flex flex-col w-full h-full overflow-y-auto" bind:this={eventDiv}>
 	{#each $messages as msg}
 		{#if msg.channel === $channel}
-			<div class="chatline">
-				<p id="timestamp"> {msg.timestamp} </p>
-				<p id="username"> {msg.user} </p>
-				<p> {msg.message} </p>
+			<div
+				class="chat {msg.user === $currentUser?.username ? 'chat-end' : 'chat-start'} m-2 w-auto"
+			>
+				<div class="chat-image avatar">
+					<div class="w-10 rounded-full">
+						<div class="justify-center items-center flex overflow-hidden h-full bg-accent-focus">
+							<FaceLaughSolid />
+						</div>
+					</div>
+				</div>
+				<div class="chat-header">
+					{msg.user}
+					<time class="text-xs opacity-50">{msg.timestamp}</time>
+				</div>
+				<div
+					class="chat-bubble whitespace-pre-line {msg.user === $currentUser?.username
+						? 'chat-bubble-primary'
+						: 'chat-bubble-secondary'}"
+				>
+					{msg.message}
+				</div>
 			</div>
 		{/if}
 	{/each}
 </div>
-
-<style>
-	.content {
-		flex: 1;
-		padding: 10px;
-		overflow-y: scroll;
-	}
-	::-webkit-scrollbar {
-		width: 12px;
-	}
-	::-webkit-scrollbar-track {
-		background-color: rgba(0, 0, 0, 0.2);
-
-	}
-	::-webkit-scrollbar-thumb {
-		border-radius: 10px;
-		background-color: rgba(183, 110, 255, 0.491);
-	}
-	.chatline {
-		display: flex;
-		flex-direction: row;
-		padding: 0px;
-		margin: 0px;
-		white-space: pre-line;
-		align-items: baseline;
-	}
-	#timestamp {
-		display: flex;
-		font-size: 0.8em;
-		margin-right: 10px;
-		color: #999;
-		align-items: center;
-		width: 150px;
-	}
-	#username {
-		display: inline-block;
-		width: auto;
-		max-width: 400px;
-		min-width: 150px;
-		margin-right: 10px;
-		color: #9d87e3;
-		align-items: center;
-	}
-</style>

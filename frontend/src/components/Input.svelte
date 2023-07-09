@@ -20,36 +20,20 @@
 	};
 </script>
 
-<div class="userInput">
-	<textarea
-		id="userinput"
-		placeholder={$status === 'connected' ? 'Message' : 'disconnected'}
-		bind:value={message}
-		on:keypress={onKeyPress}
-		disabled={$status !== 'connected'}
-	/>
+<div class="w-full">
+	<div class="m-2">
+		<textarea
+			class="textarea textarea-secondary w-full h-12"
+			placeholder={$status === 'connected' ? 'Message' : '⛔'}
+			bind:value={message}
+			on:keypress={onKeyPress}
+			disabled={$status !== 'connected'}
+		/>
+	</div>
 </div>
 
 <style>
-	.userInput {
-		resize: vertical;
-		flex: none;
-	}
 	::-webkit-resizer {
-		display: none;
-	}
-	textarea#userinput {
-		background-color: #333;
-		color: #fff;
-		width: 100%;
-		border-radius: 0;
-		border-style: none;
-		margin-bottom: -3px;
-		padding: 0;
-		border: none;
-		resize: none;
-	}
-	textarea#userinput:focus {
-		outline: none;
+		display: none; /* remove the resize handle on the bottom right */
 	}
 </style>

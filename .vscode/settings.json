@@ -2,16 +2,18 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "editor.formatOnSave": true,
+  "css.lint.unknownAtRules": "ignore",
+
   "[svelte]": {
-    "editor.defaultFormatter": "svelte.svelte-vscode",
+    "editor.defaultFormatter": "svelte.svelte-vscode"
   },
   "[go]": {
     "editor.snippetSuggestions": "top",
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
-    },
+    }
   },
   "files.associations": {
-    "*.nomad": "hcl",
+    "*.nomad": "hcl"
   }
 }

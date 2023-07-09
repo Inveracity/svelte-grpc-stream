@@ -73,7 +73,7 @@ services:
 
   pocketbase:
     container_name: pocketbase
-    image: inveracity/pocketbase:latest
+    image: inveracity/pocketbase:0.16.7
     build:
       context: .
       dockerfile: docker/pocketbase.dockerfile
@@ -87,3 +87,6 @@ services:
       - "traefik.http.services.pocketbase.loadbalancer.server.scheme=http"
       - "traefik.http.routers.pocketbase.middlewares=pocketbase-stripprefix"
       - "traefik.http.middlewares.pocketbase-stripprefix.stripprefix.prefixes=/pocketbase"
+    environment:
+      - PB_ADMIN_EMAIL=admin@localhost.com
+      - PB_ADMIN_PASS=abcdefghijkl

@@ -37,6 +37,18 @@ job "pocketbase" {
 
     task "server" {
       driver = "docker"
+
+      template {
+        destination = "${NOMAD_SECRETS_DIR}/env.vars"
+        env = true
+        data = <<-EOF
+        {{ with nomadVar "nomad/jobs" }}
+        PB_ADMIN_USER={{ .pb_admin_email }}
+        PB_ADMIN_PASS={{ .pb_admin_password }}
+        {{ end }}
+        EOF
+      }
+
       config {
         image = "inveracity/pocketbase:0.16.7"
         ports = ["http"]

@@ -1,43 +1,29 @@
 <script lang="ts">
 	import { currentUser, pb } from '$lib/pocketbase';
 	import { server } from '../stores/server';
-	import { Connect, Disconnect } from '../lib/grpc';
+	import { Connect } from '../lib/grpc';
 
 	let password = '';
 	let username = '';
 
 	async function login() {
 		await pb.collection('users').authWithPassword(username, password);
-		await Connect($server, username, '0');
-	}
-
-	function logout() {
-		pb.authStore.clear();
-		Disconnect();
+		await Connect($server, username, '0', pb.authStore.token);
 	}
 </script>
 
-<div class="login">
-	{#if $currentUser}
-		<p class="padding">Signed in as {$currentUser.username}</p>
-		<button class="padding" on:click={logout}> Logout </button>
-	{:else}
-		<form class="padding" on:submit|preventDefault>
-			<input type="text" bind:value={username} placeholder="Email" />
-			<input type="password" bind:value={password} placeholder="Password" />
-			<input type="text" bind:value={$server} />
-			<button on:click={login}> Login </button>
+<div>
+	{#if !$currentUser}
+		<form on:submit|preventDefault>
+			<input class="input input-secondary" type="text" bind:value={username} placeholder="Email" />
+			<input
+				class="input input-secondary"
+				type="password"
+				placeholder="Password"
+				bind:value={password}
+			/>
+			<input class="input input-accent" type="text" bind:value={$server} placeholder="myserver" />
+			<button class="btn btn-secondary" on:click={login}> Login </button>
 		</form>
 	{/if}
 </div>
-
-<style>
-	.login {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
-	.padding {
-		padding: 10px;
-	}
-</style>
