@@ -4,7 +4,7 @@
 	import History from '../components/History.svelte';
 	import { status } from '../stores/status';
 	import Navbar from '../components/Navbar.svelte';
-	import Menu from '../components/Menu.svelte';
+	import Logout from '../components/Logout.svelte';
 </script>
 
 <div class="flex flex-row justify-between bg-secondary-content">
@@ -13,13 +13,13 @@
 
 {#if $status === 'pending'}
 	<span class="loading loading-dots loading-lg" />
-{:else if $status !== 'connected'}
+{:else if $status === 'connected'}
 	<div class="flex flex-row h-full w-full">
 		<History />
 		<Channels />
 	</div>
 	<div class="flex flex-row w-full">
 		<Input />
-		<Menu />
+		<Logout />
 	</div>
 {/if}

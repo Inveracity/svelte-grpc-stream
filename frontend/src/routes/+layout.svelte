@@ -1,8 +1,6 @@
 <script>
 	import '../app.css';
 	import { onDestroy, onMount } from 'svelte';
-	import Login from '../components/Login.svelte';
-	import Status from '../components/Status.svelte';
 	import { currentUser, pb } from '$lib/pocketbase';
 	import { Connect, Disconnect } from '$lib/grpc';
 	import { server } from '../stores/server';

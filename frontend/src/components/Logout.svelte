@@ -1,9 +1,18 @@
 <script>
+	import { pb } from '$lib/pocketbase';
+	import { Disconnect } from '$lib/grpc';
+	import { ArrowRightFromBracketSolid } from 'flowbite-svelte-icons';
+
+	function logout() {
+		pb.authStore.clear();
+		Disconnect();
+	}
 </script>
 
-<!-- <p>Signed in as {$currentUser?.username}</p>
-<button on:click={logout}> Logout </button> -->
-
-<div>
-	<p>testuser</p>
+<div class="bg-neutral w-40">
+	<ul class="menu menu-horizontal gap-3">
+		<button class="flex-1 btn btn-ghost" on:click={logout}>
+			<ArrowRightFromBracketSolid />
+		</button>
+	</ul>
 </div>
