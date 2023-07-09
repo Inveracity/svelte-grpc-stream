@@ -25,10 +25,10 @@ const transport = new GrpcWebFetchTransport({
 let controller = new AbortController();
 
 export const Connect = async (serverId: string, userId: string, timestamp: string, jwt: string) => {
-  // If the client disconnected, the abort controller is no longer valid and a new one must be created
   // While the connection is attempting to open, let the UI show a pending state
   status.pending();
 
+  // If the client disconnected, the abort controller is no longer valid and a new one must be created
   if (controller.signal.aborted) {
     controller = new AbortController();
   }
@@ -136,7 +136,7 @@ const filtered = (msg: ChatMessage, lastTs: string): boolean => {
 const timestampToDate = (timestamp: string): string => {
   try {
     const nano = parseInt(timestamp)
-    return DateTime.fromMillis(nano / 1000000).toFormat("yyyy-MM-dd HH:mm:ss")
+    return DateTime.fromMillis(nano / 1000000).toFormat("HH:mm")
   } catch (e) {
     console.log(e);
     return timestamp;

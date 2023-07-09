@@ -12,7 +12,9 @@
 <div class="bg-neutral w-40">
 	<ul class="menu menu-horizontal gap-3">
 		<button class="flex-1 btn btn-ghost" on:click={logout}>
-			<ArrowRightFromBracketSolid />
+			<div class="h-5 w-5">
+				<ArrowRightFromBracketSolid />
+			</div>
 		</button>
 	</ul>
 </div>

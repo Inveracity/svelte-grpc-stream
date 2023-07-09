@@ -22,7 +22,7 @@
 	});
 </script>
 
-<div class="flex flex-col w-full h-full" bind:this={eventDiv}>
+<div class="flex flex-col w-full h-full overflow-y-auto" bind:this={eventDiv}>
 	{#each $messages as msg}
 		{#if msg.channel === $channel}
 			<div
@@ -40,7 +40,7 @@
 					<time class="text-xs opacity-50">{msg.timestamp}</time>
 				</div>
 				<div
-					class="chat-bubble {msg.user === $currentUser?.username
+					class="chat-bubble whitespace-pre-line {msg.user === $currentUser?.username
 						? 'chat-bubble-primary'
 						: 'chat-bubble-secondary'}"
 				>

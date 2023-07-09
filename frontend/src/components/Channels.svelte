@@ -29,7 +29,7 @@
 	<div class="flex flex-col w-full">
 		{#each $channels as chan}
 			<button
-				class="btn {chan === $channel ? 'btn-accent' : 'btn-accent btn-outline  '} m-2"
+				class="btn m-2 {chan === $channel ? 'btn-accent' : 'btn-accent btn-outline'}"
 				on:click={(e) => selectChannel(e, chan)}
 			>
 				<p>{chan}</p>
@@ -43,9 +43,10 @@
 						autofocus={true}
 						class="input input-bordered input-md max-w-sm input-accent w-full"
 						type="text"
-						bind:value={newChannelName}
 						placeholder="new channel"
 						maxlength="12"
+						bind:value={newChannelName}
+						on:focusout={() => (newChannelActive = false)}
 					/>
 				</form>
 			</div>

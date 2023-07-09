@@ -1,25 +1,31 @@
 <script>
+	// Stores
+	import { status } from '../stores/status';
+
+	// Components
 	import Channels from '../components/Channels.svelte';
 	import Input from '../components/Input.svelte';
 	import History from '../components/History.svelte';
-	import { status } from '../stores/status';
 	import Navbar from '../components/Navbar.svelte';
 	import Logout from '../components/Logout.svelte';
+	import Loading from '../components/Loading.svelte';
 </script>
 
-<div class="flex flex-row justify-between bg-secondary-content">
-	<Navbar />
-</div>
+<div class="flex flex-col h-screen w-screen">
+	<div class="flex bg-secondary-content">
+		<Navbar />
+	</div>
 
-{#if $status === 'pending'}
-	<span class="loading loading-dots loading-lg" />
-{:else if $status === 'connected'}
-	<div class="flex flex-row h-full w-full">
-		<History />
-		<Channels />
-	</div>
-	<div class="flex flex-row w-full">
-		<Input />
-		<Logout />
-	</div>
-{/if}
+	{#if $status === 'pending'}
+		<Loading />
+	{:else if $status === 'connected'}
+		<div class="flex flex-row h-full w-full overflow-y-auto">
+			<History />
+			<Channels />
+		</div>
+		<div class="flex flex-row w-full">
+			<Input />
+			<Logout />
+		</div>
+	{/if}
+</div>
