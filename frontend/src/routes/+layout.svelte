@@ -3,7 +3,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { currentUser, pb } from '$lib/pocketbase';
 	import { Connect, Disconnect } from '$lib/grpc';
-	import { server } from '../stores/server';
+	import { server } from '$lib/stores/server';
 
 	onMount(() => {
 		if ($currentUser) {

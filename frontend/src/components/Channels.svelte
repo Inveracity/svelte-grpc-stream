@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { channel, channels } from '../stores/channel';
+	import { channel, channels } from '$lib/stores/channel';
 
 	let newChannelActive = false;
 	let newChannelName = '';

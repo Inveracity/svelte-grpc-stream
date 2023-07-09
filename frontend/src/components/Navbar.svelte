@@ -1,5 +1,5 @@
 <script>
-	import { server } from '../stores/server';
+	import { server } from '$lib/stores/server';
 	import Login from './Login.svelte';
 </script>
 

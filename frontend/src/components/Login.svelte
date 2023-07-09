@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { server } from '$lib/stores/server';
 	import { currentUser, pb } from '$lib/pocketbase';
-	import { server } from '../stores/server';
-	import { Connect } from '../lib/grpc';
+	import { Connect } from '$lib/grpc';
 
 	let password = '';
 	let username = '';

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate } from 'svelte';
-	import { channel } from '../stores/channel';
-	import { messages } from '../stores/messages';
+	import { channel } from '$lib/stores/channel';
+	import { messages } from '$lib/stores/messages';
 	import { currentUser } from '$lib/pocketbase';
 	import { FaceLaughSolid } from 'flowbite-svelte-icons';
 

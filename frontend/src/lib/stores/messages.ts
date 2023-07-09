@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Message } from '../types';
+import type { Message } from '$lib/types';
 
 const democontent: Array<Message> = []
 

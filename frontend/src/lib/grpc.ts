@@ -5,12 +5,12 @@ import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 import { persisted } from 'svelte-local-storage-store'
 import { DateTime } from 'luxon';
 
-import { messages } from '../stores/messages';
-import { status } from '../stores/status';
+import { messages } from '$lib/stores/messages';
+import { status } from '$lib/stores/status';
 
-import { ChatServiceClient } from '../proto/chat/v1/chat.client';
-import type { ChatMessage } from '../proto/chat/v1/chat';
-import type { Message, OutgoingMessage } from '../types';
+import { ChatServiceClient } from '$lib/proto/chat/v1/chat.client';
+import type { ChatMessage } from '$lib/proto/chat/v1/chat';
+import type { Message, OutgoingMessage } from './types';
 
 export const chat_cache = persisted(
   'chatmessages', // storage

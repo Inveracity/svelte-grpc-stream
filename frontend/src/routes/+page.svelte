@@ -1,6 +1,6 @@
 <script>
 	// Stores
-	import { status } from '../stores/status';
+	import { status } from '$lib/stores/status';
 
 	// Components
 	import Channels from '../components/Channels.svelte';

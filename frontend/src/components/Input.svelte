@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { channel } from '../stores/channel';
+	import { channel } from '$lib/stores/channel';
+	import { status } from '$lib/stores/status';
 	import { currentUser } from '$lib/pocketbase';
-	import { status } from '../stores/status';
-	import { SendMessage } from '../lib/grpc';
-	import type { OutgoingMessage } from '../types';
+	import { SendMessage } from '$lib/grpc';
+	import type { OutgoingMessage } from '$lib/types';
+
 	let message = '';
 
 	const onKeyPress = (e: any) => {

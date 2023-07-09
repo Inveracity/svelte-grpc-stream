@@ -4,7 +4,7 @@ managed:
 plugins:
   # Typescript
   - plugin: buf.build/community/timostamm-protobuf-ts:v2.9.0
-    out: frontend/src
+    out: frontend/src/lib
 
   # Golang
   - plugin: buf.build/grpc/go:v1.3.0
