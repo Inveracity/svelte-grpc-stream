@@ -3,16 +3,23 @@
 	import Input from '../components/Input.svelte';
 	import History from '../components/History.svelte';
 	import { status } from '../stores/status';
+	import Navbar from '../components/Navbar.svelte';
+	import Menu from '../components/Menu.svelte';
 </script>
 
+<div class="flex flex-row justify-between bg-secondary-content">
+	<Navbar />
+</div>
+
 {#if $status === 'pending'}
-<span class="loading loading-dots loading-lg"></span>
+	<span class="loading loading-dots loading-lg" />
 {:else if $status !== 'connected'}
 	<div class="flex flex-row h-full w-full">
+		<History />
 		<Channels />
-		<div class="flex flex-col w-full">
-			<History />
-			<Input />
-		</div>
+	</div>
+	<div class="flex flex-row w-full">
+		<Input />
+		<Menu />
 	</div>
 {/if}

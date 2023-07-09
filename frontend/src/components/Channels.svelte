@@ -25,7 +25,7 @@
 	};
 </script>
 
-<div class="flex w-40 bg-base-300 overflow-auto">
+<div class="flex w-40 bg-neutral-focus overflow-auto">
 	<div class="flex flex-col w-full">
 		{#each $channels as chan}
 			<button

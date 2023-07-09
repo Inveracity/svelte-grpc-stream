@@ -3,6 +3,7 @@
 	import { channel } from '../stores/channel';
 	import { messages } from '../stores/messages';
 	import { currentUser } from '$lib/pocketbase';
+	import { FaceLaughSolid } from 'flowbite-svelte-icons';
 
 	let eventDiv: HTMLDivElement;
 	let autoscroll = false;
@@ -24,7 +25,16 @@
 <div class="flex flex-col w-full h-full" bind:this={eventDiv}>
 	{#each $messages as msg}
 		{#if msg.channel === $channel}
-			<div class="chat {msg.user === $currentUser?.username ? 'chat-end' : 'chat-start'} w-auto">
+			<div
+				class="chat {msg.user === $currentUser?.username ? 'chat-end' : 'chat-start'} m-2 w-auto"
+			>
+				<div class="chat-image avatar">
+					<div class="w-10 rounded-full">
+						<div class="justify-center items-center flex overflow-hidden h-full bg-accent-focus">
+							<FaceLaughSolid />
+						</div>
+					</div>
+				</div>
 				<div class="chat-header">
 					{msg.user}
 					<time class="text-xs opacity-50">{msg.timestamp}</time>
