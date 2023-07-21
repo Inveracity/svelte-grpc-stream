@@ -11,7 +11,8 @@ import { status } from '$lib/stores/status';
 import { ChatServiceClient } from '$lib/proto/chat/v1/chat.client';
 import type { ChatMessage } from '$lib/proto/chat/v1/chat';
 import type { Message, OutgoingMessage } from './types';
-import { currentUser } from './pocketbase';
+import { currentUser, pb } from './pocketbase';
+import { channels } from './stores/channel';
 
 export const chat_cache = persisted(
   'chatmessages', // storage
@@ -128,6 +129,10 @@ const filtered = (msg: ChatMessage, lastTs: string): boolean => {
     return true;
   }
 
+  if (msg.channelId === "system" && msg.userId !== pb.authStore.model?.name) {
+    return filter_system_messages(msg);
+  }
+
   // Deduplicate messages with the same timestamp
   if (msg.ts === lastTs) {
     return true;
@@ -144,4 +149,16 @@ const timestampToDate = (timestamp: string): string => {
     console.log(e);
     return timestamp;
   }
+}
+
+const filter_system_messages = (msg: ChatMessage): boolean => {
+
+  // Tell UI to show new channel when another user adds one
+  if (msg.text.startsWith("channel_add")) {
+    const channel_name = msg.text.split(" ")[1]
+    console.log(channel_name)
+    channels.add(channel_name);
+  }
+
+  return true;
 }
