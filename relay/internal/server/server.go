@@ -120,9 +120,11 @@ func (s *Server) Send(ctx context.Context, in *pb.ChatMessage) (*pb.SendResponse
 
 	msg.Data = payload
 
-	if err := s.cache.Set("myserver", string(payload)); err != nil {
-		log.Printf("error writing message to cache: %v", err)
-		return nil, err
+	if in.ChannelId != "system" { // only cache non-system messages
+		if err := s.cache.Set("myserver", string(payload)); err != nil {
+			log.Printf("error writing message to cache: %v", err)
+			return nil, err
+		}
 	}
 
 	if err := queue.Publish("myserver", payload); err != nil {
