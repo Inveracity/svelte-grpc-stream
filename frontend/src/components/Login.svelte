@@ -3,6 +3,7 @@
 	import { currentUser, pb } from '$lib/pocketbase';
 	import { Connect } from '$lib/grpc';
 	import Toast from './Toast.svelte';
+	import Logout from './Logout.svelte';
 	let toast: Toast;
 	let password = '';
 	let username = '';
@@ -35,5 +36,7 @@
 			<input class="input input-accent" type="text" bind:value={$server} placeholder="myserver" />
 			<button class="btn btn-secondary" on:click={login}> Login </button>
 		</form>
+	{:else}
+		<Logout />
 	{/if}
 </div>

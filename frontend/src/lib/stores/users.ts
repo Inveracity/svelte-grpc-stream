@@ -1,12 +1,26 @@
 import { writable } from 'svelte/store';
 
+export interface User {
+  name: string;
+  presence: boolean;
+}
+
 function createUserList() {
-  const { subscribe, update } = writable<string[]>([]);
+  const { subscribe, update } = writable<User[]>([]);
   return {
     subscribe,
-    add: (user: string) => update(users => [...users, user]),
-    remove: (user: string) => update(users => users.filter(c => c !== user)),
-    set: (users: string[]) => update(_ => users),
+    add: (user: User) => update(users => [...users, user]),
+    remove: (user: User) => update(users => users.filter(c => c !== user)),
+    set: (users: User[]) => update(_ => users),
+    upd: (user: User) => update(users => {
+      const index = users.findIndex(u => u.name === user.name);
+      if (index === -1) {
+        console.log("user not found", user.name)
+        return users;
+      }
+      users[index] = user;
+      return users;
+    }),
   };
 }
 

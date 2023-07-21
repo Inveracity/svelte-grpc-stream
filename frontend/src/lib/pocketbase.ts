@@ -2,7 +2,7 @@ import { env } from '$env/dynamic/public';
 import PocketBase from 'pocketbase';
 import { writable } from 'svelte/store';
 import { channels } from './stores/channel';
-import { users } from './stores/users';
+import { users, type User } from './stores/users';
 
 export const pb = new PocketBase(env.PUBLIC_POCKETBASE_URL);
 export const currentUser = writable(pb.authStore.model);
@@ -29,12 +29,13 @@ export const writeChannel = async (channelName: string) => {
 }
 
 export const fetchUsers = async () => {
-  const records = await pb.collection('users').getFullList({
+  const records: User[] = await pb.collection('users').getFullList({
     sort: 'created',
   });
 
   // convert records to array and set in channels store
-  users.set(records.map((record) => {
-    return record.name;
+  users.set(records.map((record: User) => {
+    const user: User = { name: record.name, presence: false };
+    return user;
   }));
 }

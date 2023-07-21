@@ -13,6 +13,7 @@ import type { ChatMessage } from '$lib/proto/chat/v1/chat';
 import type { Message, OutgoingMessage } from './types';
 import { currentUser, pb } from './pocketbase';
 import { channels } from './stores/channel';
+import { users, type User } from './stores/users';
 
 export const chat_cache = persisted(
   'chatmessages', // storage
@@ -92,6 +93,7 @@ export const Disconnect = async () => {
   chat_cache.set({ lastTs: "0" })
   messages.reset();
   controller.abort();
+  users.upd({ name: pb.authStore.model?.name, presence: false });
 };
 
 export const SendMessage = (msg: OutgoingMessage) => {
@@ -129,7 +131,7 @@ const filtered = (msg: ChatMessage, lastTs: string): boolean => {
     return true;
   }
 
-  if (msg.channelId === "system" && msg.userId !== pb.authStore.model?.name) {
+  if (msg.channelId === "system") {
     return filter_system_messages(msg);
   }
 
@@ -152,12 +154,23 @@ const timestampToDate = (timestamp: string): string => {
 }
 
 const filter_system_messages = (msg: ChatMessage): boolean => {
-
   // Tell UI to show new channel when another user adds one
-  if (msg.text.startsWith("channel_add")) {
+  if (msg.text.startsWith("channel_add") && msg.userId !== pb.authStore.model?.name) {
     const channel_name = msg.text.split(" ")[1]
     console.log(channel_name)
     channels.add(channel_name);
+  }
+
+  if (msg.text.startsWith("connected")) {
+    console.log("connected", msg.userId)
+    const user: User = { name: msg.userId, presence: true }
+    users.upd(user);
+  }
+
+  if (msg.text.startsWith("disconnected")) {
+    console.log("disconnected", msg.userId)
+    const user: User = { name: msg.userId, presence: false }
+    users.upd(user);
   }
 
   return true;
