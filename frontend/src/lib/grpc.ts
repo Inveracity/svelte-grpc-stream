@@ -11,6 +11,7 @@ import { status } from '$lib/stores/status';
 import { ChatServiceClient } from '$lib/proto/chat/v1/chat.client';
 import type { ChatMessage } from '$lib/proto/chat/v1/chat';
 import type { Message, OutgoingMessage } from './types';
+import { currentUser } from './pocketbase';
 
 export const chat_cache = persisted(
   'chatmessages', // storage
@@ -75,7 +76,8 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
 
     }
   } catch (_) {
-    // Stream closed
+    // Stream closed, force user to log in again
+    currentUser.set(null);
   }
 
   // await sub.headers;

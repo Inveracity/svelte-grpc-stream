@@ -2,17 +2,24 @@
 	import { server } from '$lib/stores/server';
 	import { currentUser, pb } from '$lib/pocketbase';
 	import { Connect } from '$lib/grpc';
-
+	import Toast from './Toast.svelte';
+	let toast: Toast;
 	let password = '';
 	let username = '';
 
 	async function login() {
-		await pb.collection('users').authWithPassword(username, password);
+		await pb
+			.collection('users')
+			.authWithPassword(username, password)
+			.catch((err) => {
+				toast.callToast(err.message, 'error');
+			});
 		await Connect($server, username, '0', pb.authStore.token);
 	}
 </script>
 
 <div>
+	<Toast bind:this={toast} />
 	{#if !$currentUser}
 		<form on:submit|preventDefault>
 			<input class="input input-secondary" type="text" bind:value={username} placeholder="Email" />
