@@ -79,8 +79,8 @@ services:
       dockerfile: docker/pocketbase.dockerfile
     ports:
       - 8090:8090
-    # volumes:
-    #   - ./pb_data:/pb_data
+    volumes:
+      - ./pb_data:/pb/pb_data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pocketbase.rule=Host(`frontend.docker.localhost`) && PathPrefix(`/pocketbase`)"

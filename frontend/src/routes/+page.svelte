@@ -3,13 +3,12 @@
 	import { status } from '$lib/stores/status';
 
 	// Components
-	import Channels from '../components/Channels.svelte';
-	import Input from '../components/Input.svelte';
-	import History from '../components/History.svelte';
-	import Navbar from '../components/Navbar.svelte';
-	import Logout from '../components/Logout.svelte';
-	import Loading from '../components/Loading.svelte';
-	import Users from '../components/Users.svelte';
+	import Channels from '$lib/components/Channels.svelte';
+	import Input from '$lib/components/Input.svelte';
+	import History from '$lib/components/History.svelte';
+	import Navbar from '$lib/components/Navbar.svelte';
+	import Loading from '$lib/components/Loading.svelte';
+	import Users from '$lib/components/Users.svelte';
 </script>
 
 <div class="flex flex-col h-screen w-screen">
