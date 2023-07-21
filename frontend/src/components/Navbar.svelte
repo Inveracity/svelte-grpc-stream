@@ -1,8 +1,8 @@
 <script>
 	import { server } from '$lib/stores/server';
-	import { showUserList } from '$lib/stores/users';
 	import { RectangleListSolid, UsersSolid } from 'flowbite-svelte-icons';
 	import Login from './Login.svelte';
+	import { showUserList } from '$lib/stores/users';
 	import { showChannelList } from '$lib/stores/channel';
 </script>
 

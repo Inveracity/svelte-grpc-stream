@@ -15,7 +15,6 @@ function createUserList() {
     upd: (user: User) => update(users => {
       const index = users.findIndex(u => u.name === user.name);
       if (index === -1) {
-        console.log("user not found", user.name)
         return users;
       }
       users[index] = user;
