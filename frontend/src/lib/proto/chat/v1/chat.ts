@@ -57,6 +57,10 @@ export interface ChatMessage {
      * @generated from protobuf field: string ts = 4;
      */
     ts: string; // timestamp
+    /**
+     * @generated from protobuf field: string jwt = 5;
+     */
+    jwt: string;
 }
 /**
  * The response payload after sending a notification
@@ -148,11 +152,12 @@ class ChatMessage$Type extends MessageType<ChatMessage> {
             { no: 1, name: "channel_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 4, name: "ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "jwt", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ChatMessage>): ChatMessage {
-        const message = { channelId: "", userId: "", text: "", ts: "" };
+        const message = { channelId: "", userId: "", text: "", ts: "", jwt: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ChatMessage>(this, message, value);
@@ -174,6 +179,9 @@ class ChatMessage$Type extends MessageType<ChatMessage> {
                     break;
                 case /* string ts */ 4:
                     message.ts = reader.string();
+                    break;
+                case /* string jwt */ 5:
+                    message.jwt = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -199,6 +207,9 @@ class ChatMessage$Type extends MessageType<ChatMessage> {
         /* string ts = 4; */
         if (message.ts !== "")
             writer.tag(4, WireType.LengthDelimited).string(message.ts);
+        /* string jwt = 5; */
+        if (message.jwt !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.jwt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

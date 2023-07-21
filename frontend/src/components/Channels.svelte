@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { SendMessage } from '$lib/grpc';
+	import { pb, writeChannel } from '$lib/pocketbase';
 	import { channel, channels } from '$lib/stores/channel';
 
 	let newChannelActive = false;
@@ -20,6 +22,13 @@
 
 	const addChannel = (name: string) => {
 		channels.add(name);
+		writeChannel(name);
+		SendMessage({
+			channelId: 'system',
+			text: `channel_add ${name}`,
+			jwt: pb.authStore.token,
+			userId: pb.authStore.model?.name || ''
+		});
 		newChannelActive = false;
 		newChannelName = '';
 	};

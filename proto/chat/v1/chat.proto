@@ -23,6 +23,7 @@ message ChatMessage {
   string user_id = 2;
   string text = 3;
   string ts = 4; // timestamp
+  string jwt = 5;
 }
 
 // The response payload after sending a notification

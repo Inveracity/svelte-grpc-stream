@@ -63,7 +63,7 @@ func (s *Server) Connect(in *pb.ConnectRequest, srv pb.ChatService_ConnectServer
 	go queue.Subscribe(ctx, in.ServerId)
 
 	// send a "connected" message to the client to tell the client it successfully connected
-	s.verifyConnection(srv, in)
+	srv.Send(systemMessage("connected"))
 
 	// getPastMessages
 	if err := s.getPastMessages(srv, in); err != nil {
@@ -97,6 +97,15 @@ func (s *Server) Connect(in *pb.ConnectRequest, srv pb.ChatService_ConnectServer
 
 // Send receives a message from the client and publishes it to the NATS server
 func (s *Server) Send(ctx context.Context, in *pb.ChatMessage) (*pb.SendResponse, error) {
+
+	auth := auth.New(s.pbURL, s.pbAdmin, s.pbPass)
+
+	authed, err := auth.VerifyUserToken(in.Jwt)
+
+	if err != nil || !authed {
+		return nil, fmt.Errorf("user not authorized")
+	}
+
 	// log.Printf("GRPC: %s/%s->%s", in.UserId, in.ChannelId, in.Text)
 	queue := queue.NewQueue(s.natsURL, "NOT_USED")
 	// Override timstamp
@@ -111,9 +120,11 @@ func (s *Server) Send(ctx context.Context, in *pb.ChatMessage) (*pb.SendResponse
 
 	msg.Data = payload
 
-	if err := s.cache.Set("myserver", string(payload)); err != nil {
-		log.Printf("error writing message to cache: %v", err)
-		return nil, err
+	if in.ChannelId != "system" { // only cache non-system messages
+		if err := s.cache.Set("myserver", string(payload)); err != nil {
+			log.Printf("error writing message to cache: %v", err)
+			return nil, err
+		}
 	}
 
 	if err := queue.Publish("myserver", payload); err != nil {
@@ -124,13 +135,13 @@ func (s *Server) Send(ctx context.Context, in *pb.ChatMessage) (*pb.SendResponse
 	return &pb.SendResponse{Ok: true, Error: ""}, nil
 }
 
-func (s *Server) verifyConnection(srv pb.ChatService_ConnectServer, in *pb.ConnectRequest) {
-	srv.Send(&pb.ChatMessage{
-		ChannelId: "system", // system information channel
-		UserId:    "server",
-		Text:      "connected",
+func systemMessage(msg string) *pb.ChatMessage {
+	return &pb.ChatMessage{
+		ChannelId: "system", // system information channel - the UI implements behavior based on events received on this channel
+		UserId:    "server", // 'server' is not an actual user
+		Text:      msg,
 		Ts:        "0",
-	})
+	}
 }
 
 // Send messages from NATS to the gRPC client

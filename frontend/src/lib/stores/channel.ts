@@ -10,11 +10,12 @@ function createChannelSelector() {
 }
 
 function createChannelList() {
-  const { subscribe, update } = writable<string[]>(['general']);
+  const { subscribe, update } = writable<string[]>([]);
   return {
     subscribe,
     add: (channel: string) => update(channels => [...channels, channel]),
     remove: (channel: string) => update(channels => channels.filter(c => c !== channel)),
+    set: (channels: string[]) => update(_ => channels),
   };
 }
 
