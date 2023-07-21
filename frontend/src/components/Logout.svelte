@@ -9,9 +9,10 @@
 	}
 </script>
 
-<div class="bg-neutral w-40">
+<div>
 	<ul class="menu menu-horizontal gap-3">
-		<button class="flex-1 btn btn-ghost" on:click={logout}>
+		<button class="flex gap-2" on:click={logout}>
+			<p>sign out</p>
 			<div class="h-5 w-5">
 				<ArrowRightFromBracketSolid />
 			</div>
