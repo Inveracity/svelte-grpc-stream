@@ -9,8 +9,7 @@
 	// <Toast bind:this={toast} />
 
 	export function callToast(msg: string, type?: string | undefined, ms?: number | undefined) {
-		console.log('callToast()');
-		let milliseconds: number = 8000;
+		let milliseconds: number = 1200;
 		if (ms) {
 			milliseconds = ms;
 		}

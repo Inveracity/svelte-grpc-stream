@@ -11,10 +11,13 @@
 		await pb
 			.collection('users')
 			.authWithPassword(username, password)
+			.then((_) => {
+				toast.callToast('Login successful', 'success');
+				Connect($server, username, '0', pb.authStore.token);
+			})
 			.catch((err) => {
 				toast.callToast(err.message, 'error');
 			});
-		await Connect($server, username, '0', pb.authStore.token);
 	}
 </script>
 

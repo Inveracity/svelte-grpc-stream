@@ -63,7 +63,7 @@ func (s *Server) Connect(in *pb.ConnectRequest, srv pb.ChatService_ConnectServer
 	go queue.Subscribe(ctx, in.ServerId)
 
 	// send a "connected" message to the client to tell the client it successfully connected
-	s.verifyConnection(srv, in)
+	srv.Send(systemMessage("connected"))
 
 	// getPastMessages
 	if err := s.getPastMessages(srv, in); err != nil {
@@ -124,13 +124,13 @@ func (s *Server) Send(ctx context.Context, in *pb.ChatMessage) (*pb.SendResponse
 	return &pb.SendResponse{Ok: true, Error: ""}, nil
 }
 
-func (s *Server) verifyConnection(srv pb.ChatService_ConnectServer, in *pb.ConnectRequest) {
-	srv.Send(&pb.ChatMessage{
-		ChannelId: "system", // system information channel
-		UserId:    "server",
-		Text:      "connected",
+func systemMessage(msg string) *pb.ChatMessage {
+	return &pb.ChatMessage{
+		ChannelId: "system", // system information channel - the UI implements behavior based on events received on this channel
+		UserId:    "server", // 'server' is not an actual user
+		Text:      msg,
 		Ts:        "0",
-	})
+	}
 }
 
 // Send messages from NATS to the gRPC client
