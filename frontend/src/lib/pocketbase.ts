@@ -22,6 +22,12 @@ export const fetchChannels = async () => {
   }));
 }
 
+export const writeChannel = async (channelName: string) => {
+  await pb.collection('channels').create({
+    name: channelName,
+  });
+}
+
 export const fetchUsers = async () => {
   const records = await pb.collection('users').getFullList({
     sort: 'created',
