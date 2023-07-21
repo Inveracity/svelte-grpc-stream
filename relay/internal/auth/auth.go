@@ -62,20 +62,15 @@ func New(BaseURL, email, password string) *Auth {
 // VerifyUserToken verifies a user token from the PocketBase API
 func (a *Auth) VerifyUserToken(usertoken string) (bool, error) {
 
-	log.Println("Verifying user token process started")
-
-	log.Println("Decoding user token")
 	claims, err := a.decodeUserToken(usertoken)
 	if err != nil {
 		return false, err
 	}
 
-	log.Println("Checking token expiry")
 	if a.tokenExpired(claims) {
 		return false, fmt.Errorf("token expired")
 	}
 
-	log.Println("Looking up user")
 	admintoken, err := a.getAdminToken()
 	if err != nil {
 		return false, err
@@ -96,7 +91,6 @@ func (a *Auth) VerifyUserToken(usertoken string) (bool, error) {
 		return false, nil
 	}
 
-	log.Println("User found")
 	return true, nil
 }
 
