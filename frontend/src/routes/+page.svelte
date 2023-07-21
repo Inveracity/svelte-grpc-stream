@@ -9,6 +9,8 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Loading from '$lib/components/Loading.svelte';
 	import Users from '$lib/components/Users.svelte';
+	import { showUserList } from '$lib/stores/users';
+	import { showChannelList } from '$lib/stores/channel';
 </script>
 
 <div class="flex flex-col h-screen w-screen">
@@ -20,9 +22,13 @@
 		<Loading />
 	{:else if $status === 'connected'}
 		<div class="flex flex-row h-full w-full overflow-y-auto">
-			<Users />
+			{#if $showUserList}
+				<Users />
+			{/if}
 			<History />
-			<Channels />
+			{#if $showChannelList}
+				<Channels />
+			{/if}
 		</div>
 		<div class="flex flex-row w-full">
 			<Input />

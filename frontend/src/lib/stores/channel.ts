@@ -19,6 +19,14 @@ function createChannelList() {
   };
 }
 
+function toggleChannelList() {
+  const { subscribe, update } = writable<boolean>(false);
+  return {
+    subscribe,
+    toggle: () => update(v => !v),
+  };
+}
 
 export const channel = createChannelSelector();
 export const channels = createChannelList();
+export const showChannelList = toggleChannelList();

@@ -24,4 +24,13 @@ function createUserList() {
   };
 }
 
+function toggleUserList() {
+  const { subscribe, update } = writable<boolean>(false);
+  return {
+    subscribe,
+    toggle: () => update(v => !v),
+  };
+}
+
 export const users = createUserList();
+export const showUserList = toggleUserList();
