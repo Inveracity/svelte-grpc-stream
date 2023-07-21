@@ -9,5 +9,7 @@ migrate(
       return Dao(db).saveAdmin(admin);
     }
   },
-  (db) => { }
+  (db) => {
+    return null;
+  }
 );

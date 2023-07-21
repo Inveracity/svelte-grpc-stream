@@ -9,4 +9,5 @@ export interface OutgoingMessage {
   channelId: string;
   userId: string;
   text: string;
+  jwt: string;
 }

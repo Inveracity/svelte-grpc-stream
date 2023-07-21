@@ -97,6 +97,15 @@ func (s *Server) Connect(in *pb.ConnectRequest, srv pb.ChatService_ConnectServer
 
 // Send receives a message from the client and publishes it to the NATS server
 func (s *Server) Send(ctx context.Context, in *pb.ChatMessage) (*pb.SendResponse, error) {
+
+	auth := auth.New(s.pbURL, s.pbAdmin, s.pbPass)
+
+	authed, err := auth.VerifyUserToken(in.Jwt)
+
+	if err != nil || !authed {
+		return nil, fmt.Errorf("user not authorized")
+	}
+
 	// log.Printf("GRPC: %s/%s->%s", in.UserId, in.ChannelId, in.Text)
 	queue := queue.NewQueue(s.natsURL, "NOT_USED")
 	// Override timstamp

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { channel } from '$lib/stores/channel';
 	import { status } from '$lib/stores/status';
-	import { currentUser } from '$lib/pocketbase';
+	import { currentUser, pb } from '$lib/pocketbase';
 	import { SendMessage } from '$lib/grpc';
 	import type { OutgoingMessage } from '$lib/types';
 
@@ -13,7 +13,8 @@
 			let msg: OutgoingMessage = {
 				channelId: $channel,
 				userId: $currentUser?.username,
-				text: message
+				text: message,
+				jwt: pb.authStore.token
 			};
 			SendMessage(msg);
 			message = '';
