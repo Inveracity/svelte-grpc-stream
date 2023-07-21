@@ -101,6 +101,7 @@ export const SendMessage = (msg: OutgoingMessage) => {
     userId: msg.userId,
     text: msg.text,
     ts: "0", // The server will set the timestamp
+    jwt: msg.jwt,
   };
 
   client.send(request).then((response) => {
