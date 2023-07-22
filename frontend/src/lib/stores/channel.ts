@@ -20,7 +20,7 @@ function createChannelList() {
 }
 
 function toggleChannelList() {
-  const { subscribe, update } = writable<boolean>(false);
+  const { subscribe, update } = writable<boolean>(true);
   return {
     subscribe,
     toggle: () => update(v => !v),

@@ -24,7 +24,7 @@ function createUserList() {
 }
 
 function toggleUserList() {
-  const { subscribe, update } = writable<boolean>(false);
+  const { subscribe, update } = writable<boolean>(true);
   return {
     subscribe,
     toggle: () => update(v => !v),
