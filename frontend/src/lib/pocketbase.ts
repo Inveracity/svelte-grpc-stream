@@ -13,29 +13,33 @@ pb.authStore.onChange(() => {
 
 export const fetchChannels = async () => {
   const records = await pb.collection('channels').getFullList({
-    sort: 'created',
+    sort: 'created'
   });
 
   // convert records to array and set in channels store
-  channels.set(records.map((record) => {
-    return record.name;
-  }));
-}
+  channels.set(
+    records.map((record) => {
+      return record.name;
+    })
+  );
+};
 
 export const writeChannel = async (channelName: string) => {
   await pb.collection('channels').create({
-    name: channelName,
+    name: channelName
   });
-}
+};
 
 export const fetchUsers = async () => {
   const records: User[] = await pb.collection('users').getFullList({
-    sort: 'created',
+    sort: 'created'
   });
 
   // convert records to array and set in channels store
-  users.set(records.map((record: User) => {
-    const user: User = { name: record.name, presence: false };
-    return user;
-  }));
-}
+  users.set(
+    records.map((record: User) => {
+      const user: User = { name: record.name, presence: false };
+      return user;
+    })
+  );
+};
