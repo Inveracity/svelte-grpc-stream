@@ -7,9 +7,10 @@
 
 	onMount(() => {
 		if ($currentUser) {
+			// if user is already logged in, then connect to the server immediately
+			Connect($server, $currentUser.username, '0');
 			fetchChannels();
 			fetchUsers();
-			Connect($server, $currentUser.username, '0', pb.authStore.token);
 		}
 	});
 	onDestroy(() => {
