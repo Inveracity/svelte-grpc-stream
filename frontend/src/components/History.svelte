@@ -24,7 +24,7 @@
 
 <div class="flex flex-col w-full h-full overflow-y-auto" bind:this={eventDiv}>
 	{#each $messages as msg}
-		{#if msg.channel === $channel}
+		{#if msg.channel === $channel && msg.user !== 'server'}
 			<div
 				class="chat {msg.user === $currentUser?.username ? 'chat-end' : 'chat-start'} m-2 w-auto"
 			>
@@ -44,6 +44,13 @@
 						? 'chat-bubble-primary'
 						: 'chat-bubble-secondary'}"
 				>
+					{msg.message}
+				</div>
+			</div>
+		{/if}
+		{#if msg.user === 'server'}
+			<div class="divider ml-10 mr-10">
+				<div class="text-xs opacity-60 rounded m-2">
 					{msg.message}
 				</div>
 			</div>

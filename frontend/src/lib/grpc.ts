@@ -158,6 +158,7 @@ const filter_system_messages = (msg: ChatMessage): boolean => {
   if (msg.text.startsWith("disconnected")) {
     const user: User = { name: msg.userId, presence: false }
     users.upd(user);
+    messages.add({ channel: "general", message: `${msg.userId} disconnected`, timestamp: "0", user: "server" })
   }
 
   return true;
