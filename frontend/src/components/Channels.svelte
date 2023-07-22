@@ -8,7 +8,6 @@
 
 	const selectChannel = (e: any, channelName: string) => {
 		e.preventDefault();
-		console.log('selectedChannel: ' + channelName);
 		channel.set(channelName);
 	};
 
@@ -26,7 +25,6 @@
 		SendMessage({
 			channelId: 'system',
 			text: `channel_add ${name}`,
-			jwt: pb.authStore.token,
 			userId: pb.authStore.model?.name || ''
 		});
 		newChannelActive = false;

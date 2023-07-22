@@ -30,10 +30,6 @@ export interface ConnectRequest {
      * @generated from protobuf field: string last_ts = 3;
      */
     lastTs: string; // last timestamp received by the client
-    /**
-     * @generated from protobuf field: string jwt = 4;
-     */
-    jwt: string;
 }
 /**
  * Chat server stream after subscribing to a channel
@@ -57,10 +53,6 @@ export interface ChatMessage {
      * @generated from protobuf field: string ts = 4;
      */
     ts: string; // timestamp
-    /**
-     * @generated from protobuf field: string jwt = 5;
-     */
-    jwt: string;
 }
 /**
  * The response payload after sending a notification
@@ -83,12 +75,11 @@ class ConnectRequest$Type extends MessageType<ConnectRequest> {
         super("proto.chat.v1.ConnectRequest", [
             { no: 1, name: "server_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "last_ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "jwt", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 3, name: "last_ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ConnectRequest>): ConnectRequest {
-        const message = { serverId: "", userId: "", lastTs: "", jwt: "" };
+        const message = { serverId: "", userId: "", lastTs: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ConnectRequest>(this, message, value);
@@ -107,9 +98,6 @@ class ConnectRequest$Type extends MessageType<ConnectRequest> {
                     break;
                 case /* string last_ts */ 3:
                     message.lastTs = reader.string();
-                    break;
-                case /* string jwt */ 4:
-                    message.jwt = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -132,9 +120,6 @@ class ConnectRequest$Type extends MessageType<ConnectRequest> {
         /* string last_ts = 3; */
         if (message.lastTs !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.lastTs);
-        /* string jwt = 4; */
-        if (message.jwt !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.jwt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -152,12 +137,11 @@ class ChatMessage$Type extends MessageType<ChatMessage> {
             { no: 1, name: "channel_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "jwt", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 4, name: "ts", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ChatMessage>): ChatMessage {
-        const message = { channelId: "", userId: "", text: "", ts: "", jwt: "" };
+        const message = { channelId: "", userId: "", text: "", ts: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ChatMessage>(this, message, value);
@@ -179,9 +163,6 @@ class ChatMessage$Type extends MessageType<ChatMessage> {
                     break;
                 case /* string ts */ 4:
                     message.ts = reader.string();
-                    break;
-                case /* string jwt */ 5:
-                    message.jwt = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -207,9 +188,6 @@ class ChatMessage$Type extends MessageType<ChatMessage> {
         /* string ts = 4; */
         if (message.ts !== "")
             writer.tag(4, WireType.LengthDelimited).string(message.ts);
-        /* string jwt = 5; */
-        if (message.jwt !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.jwt);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

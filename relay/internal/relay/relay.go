@@ -4,20 +4,22 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
 
+	"github.com/inveracity/svelte-grpc-stream/internal/auth"
 	"github.com/inveracity/svelte-grpc-stream/internal/cache"
 	pb "github.com/inveracity/svelte-grpc-stream/internal/proto/chat/v1"
 	"github.com/inveracity/svelte-grpc-stream/internal/server"
 
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/keepalive"
 )
 
 type Relay struct {
-	server *server.Server
-	port   int
+	server  *server.Server
+	port    int
+	pbURL   string
+	pbAdmin string
+	pbPass  string
 }
 
 func NewRelay(port int, natsURL, redisURL, pbURL, pbAdmin, pbPass string) *Relay {
@@ -29,10 +31,13 @@ func NewRelay(port int, natsURL, redisURL, pbURL, pbAdmin, pbPass string) *Relay
 
 	cache := cache.NewCache(redisClient)
 
-	grpcServer := server.NewServer(natsURL, pbURL, pbAdmin, pbPass, cache)
+	grpcServer := server.NewServer(natsURL, cache)
 	return &Relay{
-		port:   port,
-		server: grpcServer,
+		port:    port,
+		server:  grpcServer,
+		pbURL:   pbURL,
+		pbAdmin: pbAdmin,
+		pbPass:  pbPass,
 	}
 }
 
@@ -42,16 +47,14 @@ func (r *Relay) Run() error {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	authMgr := auth.New(r.pbURL, r.pbAdmin, r.pbPass)
+	interceptor := server.NewAuthInterceptor(authMgr)
+
 	s := grpc.NewServer(
-		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
-			MinTime:             time.Duration(1 * time.Second),
-			PermitWithoutStream: true, // Allow pings even when there are no active streams
-		}),
-		grpc.KeepaliveParams(keepalive.ServerParameters{
-			Time:    time.Duration(2 * time.Hour),
-			Timeout: time.Duration(20 * time.Second),
-		}),
+		grpc.UnaryInterceptor(interceptor.Unary()),
+		grpc.StreamInterceptor(interceptor.Stream()),
 	)
+
 	pb.RegisterChatServiceServer(s, r.server)
 
 	log.Printf("GRPC: server listening at %v", lis.Addr())
