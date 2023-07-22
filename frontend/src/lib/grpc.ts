@@ -105,9 +105,8 @@ export const SendMessage = (msg: OutgoingMessage) => {
     ts: "0", // The server will set the timestamp
   };
 
-  client.send(request, opts).then((response) => {
-
-    console.log(response.status.code);
+  client.send(request, opts).then((_) => {
+    // nothing
   }).catch((e) => {
     console.log(e);
   });
