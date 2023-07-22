@@ -130,13 +130,7 @@ func (s *Server) ping(ctx context.Context, srv pb.ChatService_ConnectServer, in 
 		default:
 			time.Sleep(1 * time.Second)
 			s.broadcast(in.UserId, "connected")
-			err := srv.Send(&pb.ChatMessage{
-				ChannelId: "system", // system information channel
-				UserId:    "server",
-				Text:      "ping",
-				Ts:        "0",
-			})
-
+			err := srv.Send(systemMessage("ping", "server"))
 			if err != nil {
 				cancel()
 			}
