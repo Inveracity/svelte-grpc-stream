@@ -144,7 +144,6 @@ const timestampToDate = (timestamp: string): string => {
 }
 
 const filter_system_messages = (msg: ChatMessage): boolean => {
-  console.log(msg)
   // Tell UI to show new channel when another user adds one
   if (msg.text.startsWith("channel_add") && msg.userId !== pb.authStore.model?.name) {
     const channel_name = msg.text.split(" ")[1]
@@ -152,7 +151,6 @@ const filter_system_messages = (msg: ChatMessage): boolean => {
   }
 
   if (msg.text.startsWith("connected")) {
-    console.log(msg);
     const user: User = { name: msg.userId, presence: true }
     users.upd(user);
   }
