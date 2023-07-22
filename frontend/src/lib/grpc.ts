@@ -119,21 +119,14 @@ const filtered = (msg: ChatMessage, lastTs: string): boolean => {
     return true;
   }
 
-  // Do not write messages with timestamp 0 to the UI
-  if (msg.ts === "0") {
-    return true;
-  }
-
-  if (msg.userId === "server") {
-    return true;
-  }
-
   if (msg.channelId === "system") {
     return filter_system_messages(msg);
   }
 
+  // Do not write messages with timestamp 0 to the UI
   // Deduplicate messages with the same timestamp
-  if (msg.ts === lastTs) {
+  // Ignore all other server messages
+  if (msg.ts === "0" || msg.ts === lastTs || msg.userId === "server") {
     return true;
   }
 
@@ -151,6 +144,7 @@ const timestampToDate = (timestamp: string): string => {
 }
 
 const filter_system_messages = (msg: ChatMessage): boolean => {
+  console.log(msg)
   // Tell UI to show new channel when another user adds one
   if (msg.text.startsWith("channel_add") && msg.userId !== pb.authStore.model?.name) {
     const channel_name = msg.text.split(" ")[1]
@@ -158,6 +152,7 @@ const filter_system_messages = (msg: ChatMessage): boolean => {
   }
 
   if (msg.text.startsWith("connected")) {
+    console.log(msg);
     const user: User = { name: msg.userId, presence: true }
     users.upd(user);
   }
