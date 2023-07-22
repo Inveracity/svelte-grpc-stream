@@ -20,8 +20,8 @@ go run cmd/relay/main.go
 
 The relay server will not connect to NATS until a user requests a queue to be created.
 
-from the root of the project run NATS via docker compose.
+from the root of the project run NATS and Redis via docker compose.
 
 ```sh
-docker compose up -d nats
+docker compose up -d nats redis
 ```
