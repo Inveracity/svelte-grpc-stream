@@ -8,7 +8,6 @@
 
 	const selectChannel = (e: any, channelName: string) => {
 		e.preventDefault();
-		console.log('selectedChannel: ' + channelName);
 		channel.set(channelName);
 	};
 
