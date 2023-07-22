@@ -11,6 +11,7 @@
 	import Users from '../components/Users.svelte';
 	import { showUserList } from '$lib/stores/users';
 	import { showChannelList } from '$lib/stores/channel';
+	import Login from '../components/Login.svelte';
 </script>
 
 <div class="flex flex-col h-screen w-screen">
@@ -32,6 +33,10 @@
 		</div>
 		<div class="flex flex-row w-full">
 			<Input />
+		</div>
+	{:else}
+		<div class="flex mt-2 justify-center">
+			<Login />
 		</div>
 	{/if}
 </div>
