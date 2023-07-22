@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Svelte + gRPC Stream</h1>
-  <img src="docs/screenshot.jpg" />
+  <video src="https://github.com/Inveracity/svelte-grpc-stream/assets/8753040/2720de57-6dcb-4add-bb4b-26f1d74165aa" />
   <p>:warning: work in progress :warning:</p>
   <p>Learning some Svelte by building a gRPC based chat system.</p>
 </div>
