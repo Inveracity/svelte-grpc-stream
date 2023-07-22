@@ -155,18 +155,15 @@ const filter_system_messages = (msg: ChatMessage): boolean => {
   // Tell UI to show new channel when another user adds one
   if (msg.text.startsWith("channel_add") && msg.userId !== pb.authStore.model?.name) {
     const channel_name = msg.text.split(" ")[1]
-    console.log(channel_name)
     channels.add(channel_name);
   }
 
   if (msg.text.startsWith("connected")) {
-    console.log("connected", msg.userId)
     const user: User = { name: msg.userId, presence: true }
     users.upd(user);
   }
 
   if (msg.text.startsWith("disconnected")) {
-    console.log("disconnected", msg.userId)
     const user: User = { name: msg.userId, presence: false }
     users.upd(user);
   }
