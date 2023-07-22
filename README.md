@@ -1,8 +1,9 @@
-# Svelte + gRPC stream
-
-:warning: work in progress :warning:
-
-Learning some Svelte by building a gRPC based chat system.
+<div align="center">
+  <h1>Svelte + gRPC Stream</h1>
+  <img src="docs/screenshot.jpg" />
+  <p>:warning: work in progress :warning:</p>
+  <p>Learning some Svelte by building a gRPC based chat system.</p>
+</div>
 
 ## Infrastructure
 
