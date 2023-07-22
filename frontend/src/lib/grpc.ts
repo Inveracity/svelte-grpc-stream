@@ -27,7 +27,7 @@ const transport = new GrpcWebFetchTransport({
 
 let controller = new AbortController();
 
-export const Connect = async (serverId: string, userId: string, timestamp: string, jwt: string) => {
+export const Connect = async (serverId: string, userId: string, timestamp: string) => {
   // While the connection is attempting to open, let the UI show a pending state
   status.pending();
 
@@ -37,7 +37,7 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
   }
 
   // The abort controller is used to signal the server to close the stream
-  const opts = transport.mergeOptions({ abort: controller.signal });
+  const opts = transport.mergeOptions({ abort: controller.signal, meta: { jwt: pb.authStore.token } });
 
   // Get the last timestamp from the cache
   const lastTs = get(chat_cache).lastTs
@@ -47,7 +47,6 @@ export const Connect = async (serverId: string, userId: string, timestamp: strin
     serverId: serverId,
     userId: userId,
     lastTs: timestamp,
-    jwt: jwt,
   }, opts);
 
 
@@ -98,16 +97,15 @@ export const Disconnect = async () => {
 
 export const SendMessage = (msg: OutgoingMessage) => {
   const client = new ChatServiceClient(transport);
-
+  const opts = transport.mergeOptions({ meta: { jwt: pb.authStore.token } })
   const request: ChatMessage = {
     channelId: msg.channelId,
     userId: msg.userId,
     text: msg.text,
     ts: "0", // The server will set the timestamp
-    jwt: msg.jwt,
   };
 
-  client.send(request).then((response) => {
+  client.send(request, opts).then((response) => {
 
     console.log(response.status.code);
   }).catch((e) => {
